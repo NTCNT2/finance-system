@@ -1808,6 +1808,12 @@ function saveTx() {
   } else {
     const maxId = transactions.length ? Math.max(...transactions.map(t=>t.id)) : 0;
     transactions.push({ id: maxId+1, date, amount, type, category, note });
+    saveTransactionToCloud({
+    type,
+    category,
+    amount,
+    note
+});
     showToast('เพิ่มรายการสำเร็จ ✅', 'success');
   }
   saveData(transactions);
