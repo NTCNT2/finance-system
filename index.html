@@ -2158,5 +2158,22 @@ window.addEventListener('resize', updateChartGrid);
 updateChartGrid();
 
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = 'https://htnhurnuhmjbwpixyyvn.supabase.co';
+
+const SUPABASE_KEY = 'sb_publishable_wxRvzUmLYem7RWq5jmi0gg_zNbXWX_A';
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+console.log('Supabase Connected');
+</script>
+
+</body>
+</html>
 </body>
 </html>
