@@ -2177,6 +2177,25 @@ const supabaseClient = supabase.createClient(
 );
 
 console.log('Supabase Connected');
+
+async function saveTransactionToCloud(transaction) {
+
+    const { data, error } = await supabaseClient
+        .from('transactions')
+        .insert([{
+            type: transaction.type,
+            category: transaction.category,
+            amount: transaction.amount,
+            note: transaction.note
+        }]);
+
+    if (error) {
+        console.error(error);
+        alert('บันทึกออนไลน์ไม่สำเร็จ');
+    } else {
+        console.log('Saved to Supabase');
+    }
+}
 </script>
 
 </body>
