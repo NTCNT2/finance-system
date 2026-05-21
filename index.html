@@ -732,6 +732,60 @@
     font-size: 60px; margin-bottom: 16px;
     filter: grayscale(0.3);
   }
+
+  /* ===== NOTIFICATION TABS ===== */
+  .notif-tab {
+    padding: 4px 12px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    border: none; font-family: 'Sarabun', sans-serif;
+    transition: all 0.2s;
+  }
+  .dark .notif-tab { background: rgba(255,255,255,0.07); color: #94a3b8; }
+  .light .notif-tab { background: rgba(99,102,241,0.08); color: #64748b; }
+  .notif-tab.active {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+  }
+
+  /* ===== NOTIFICATION ITEM ===== */
+  .notif-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px; border-radius: 14px;
+    cursor: pointer; transition: background 0.2s;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .notif-item:hover { background: rgba(99,102,241,0.08); }
+  .notif-item.unread::before {
+    content: '';
+    position: absolute; top: 14px; right: 10px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    box-shadow: 0 0 6px rgba(99,102,241,0.6);
+  }
+  .notif-item.unread { background: rgba(99,102,241,0.05); }
+  .notif-item-title {
+    font-size: 12px; font-weight: 700;
+    line-height: 1.3;
+  }
+  .dark .notif-item-title { color: #e2e8f0; }
+  .light .notif-item-title { color: #1e1b4b; }
+  .notif-item-body {
+    font-size: 11px; color: #94a3b8;
+    margin-top: 2px; line-height: 1.4;
+  }
+  .notif-item-time {
+    font-size: 10px; color: #6366f1;
+    margin-top: 3px; font-weight: 600;
+  }
+
+  /* Pulse animation for unread badge */
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(236,72,153,0.5); }
+    70% { box-shadow: 0 0 0 6px rgba(236,72,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(236,72,153,0); }
+  }
+  .notif-badge { animation: pulse-ring 2s infinite; }
 </style>
 </head>
 <body>
@@ -851,27 +905,28 @@
 
     <!-- Notification -->
     <div class="relative">
-      <button onclick="toggleNotif()" class="p-2 rounded-xl transition-all hover:bg-white/10 relative">
+      <button onclick="toggleNotif()" id="notif-btn" class="p-2 rounded-xl transition-all hover:bg-white/10 relative">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
         </svg>
-        <div class="notif-badge">3</div>
+        <div class="notif-badge" id="notif-badge-count" style="display:none;">0</div>
       </button>
       <div id="notif-panel">
-        <div class="font-bold text-sm mb-3 text-primary-text">การแจ้งเตือน</div>
-        <div class="space-y-2">
-          <div class="flex gap-3 p-2 rounded-xl hover:bg-white/5 cursor-pointer">
-            <div class="icon-box icon-blue" style="width:36px;height:36px;font-size:14px;flex-shrink:0;">💰</div>
-            <div><div class="text-xs font-semibold text-primary-text">รายรับใหม่</div><div class="text-xs text-secondary">เงินสด ฿1,500</div></div>
-          </div>
-          <div class="flex gap-3 p-2 rounded-xl hover:bg-white/5 cursor-pointer">
-            <div class="icon-box icon-orange" style="width:36px;height:36px;font-size:14px;flex-shrink:0;">📦</div>
-            <div><div class="text-xs font-semibold text-primary-text">ซื้อวัตถุดิบ</div><div class="text-xs text-secondary">มาม่า ฿850</div></div>
-          </div>
-          <div class="flex gap-3 p-2 rounded-xl hover:bg-white/5 cursor-pointer">
-            <div class="icon-box icon-green" style="width:36px;height:36px;font-size:14px;flex-shrink:0;">📊</div>
-            <div><div class="text-xs font-semibold text-primary-text">รายงานประจำวัน</div><div class="text-xs text-secondary">ดูสรุปยอดวันนี้</div></div>
-          </div>
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="font-bold text-sm text-primary-text">การแจ้งเตือน</div>
+          <button onclick="markAllRead()" class="text-xs font-semibold" style="color:#6366f1;">อ่านทั้งหมด</button>
+        </div>
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-3">
+          <button class="notif-tab active" data-tab="all" onclick="setNotifTab(this,'all')">ทั้งหมด</button>
+          <button class="notif-tab" data-tab="unread" onclick="setNotifTab(this,'unread')">ยังไม่อ่าน</button>
+        </div>
+        <!-- List -->
+        <div id="notif-list" style="max-height:320px;overflow-y:auto;"></div>
+        <!-- Footer -->
+        <div class="pt-3 mt-2 border-t text-center" style="border-color:rgba(255,255,255,0.08);">
+          <button onclick="clearAllNotif()" class="text-xs text-secondary hover:text-red-400 transition-colors">🗑️ ลบการแจ้งเตือนทั้งหมด</button>
         </div>
       </div>
     </div>
@@ -1109,6 +1164,17 @@
   <div id="page-settings" class="page">
     <h2 class="text-lg font-bold text-primary-text mb-5">ตั้งค่า</h2>
 
+    <!-- DB Status -->
+    <div class="glass rounded-2xl p-5 mb-4">
+      <h3 class="font-bold text-sm text-primary-text mb-3">การเชื่อมต่อฐานข้อมูล</h3>
+      <div id="db-status-badge" class="flex flex-wrap items-center gap-1 text-sm mb-3">
+        <span class="text-secondary text-xs">กำลังตรวจสอบ...</span>
+      </div>
+      <button class="text-xs font-semibold" style="color:#6366f1;background:none;border:none;cursor:pointer;" onclick="showSetupPage()">
+        🔌 ตั้งค่า Supabase Connection
+      </button>
+    </div>
+
     <!-- Profile section -->
     <div class="glass rounded-2xl p-5 mb-4">
       <h3 class="font-bold text-sm text-primary-text mb-4">ข้อมูลโปรไฟล์</h3>
@@ -1299,6 +1365,58 @@ let editCatId = null;
 let chartLine = null, chartBar = null, chartDonut = null;
 let isDark = true;
 
+// ==================== SUPABASE CONFIG ====================
+let SUPA_URL = localStorage.getItem('supa_url') || '';
+let SUPA_KEY = localStorage.getItem('supa_key') || '';
+
+// Low-level Supabase REST helper
+const supa = {
+  headers() {
+    return {
+      'Content-Type': 'application/json',
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Prefer': 'return=representation'
+    };
+  },
+  async get(table, params = '') {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${params}`, { headers: this.headers() });
+    if (!res.ok) throw new Error(`GET ${table} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  },
+  async post(table, body) {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+      method: 'POST', headers: this.headers(), body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`POST ${table} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  },
+  async patch(table, id, body) {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'PATCH', headers: this.headers(), body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`PATCH ${table} failed: ${res.status} ${await res.text()}`);
+    return res.json();
+  },
+  async delete(table, id) {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'DELETE', headers: this.headers()
+    });
+    if (!res.ok) throw new Error(`DELETE ${table} failed: ${res.status} ${await res.text()}`);
+  },
+  async deleteAll(table) {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=neq.0`, {
+      method: 'DELETE', headers: this.headers()
+    });
+    if (!res.ok) throw new Error(`DELETE ALL ${table} failed`);
+  },
+  // Test connection
+  async ping() {
+    const res = await fetch(`${SUPA_URL}/rest/v1/`, { headers: this.headers() });
+    return res.ok || res.status === 200 || res.status === 404; // 404 = connected but no route = OK
+  }
+};
+
 // ==================== DATA ====================
 const defaultCategories = [
   { id: 1, name: 'เงินสด', type: 'income' },
@@ -1311,7 +1429,268 @@ const defaultCategories = [
   { id: 8, name: 'อื่นๆ', type: 'expense' }
 ];
 
-// Generate demo data
+let transactions = [];
+let categories = [];
+
+// Map Supabase row → app object
+function mapTx(row) {
+  return {
+    id: row.id,
+    date: row.date,
+    amount: Number(row.amount),
+    type: row.type,
+    category: row.category,
+    note: row.note || ''
+  };
+}
+function mapCat(row) {
+  return { id: row.id, name: row.name, type: row.type };
+}
+
+// ---- Transactions ----
+async function dbLoadTransactions() {
+  const rows = await supa.get('transactions', 'order=date.desc,id.desc');
+  return rows.map(mapTx);
+}
+async function dbInsertTx(tx) {
+  const rows = await supa.post('transactions', {
+    date: tx.date, amount: tx.amount, type: tx.type,
+    category: tx.category, note: tx.note || ''
+  });
+  return mapTx(rows[0]);
+}
+async function dbUpdateTx(tx) {
+  const rows = await supa.patch('transactions', tx.id, {
+    date: tx.date, amount: tx.amount, type: tx.type,
+    category: tx.category, note: tx.note || ''
+  });
+  return mapTx(rows[0]);
+}
+async function dbDeleteTx(id) {
+  await supa.delete('transactions', id);
+}
+
+// ---- Categories ----
+async function dbLoadCategories() {
+  const rows = await supa.get('categories', 'order=id.asc');
+  return rows.map(mapCat);
+}
+async function dbInsertCat(cat) {
+  const rows = await supa.post('categories', { name: cat.name, type: cat.type });
+  return mapCat(rows[0]);
+}
+async function dbUpdateCat(cat) {
+  const rows = await supa.patch('categories', cat.id, { name: cat.name, type: cat.type });
+  return mapCat(rows[0]);
+}
+async function dbDeleteCat(id) {
+  await supa.delete('categories', id);
+}
+
+// Seed default categories if table is empty
+async function seedCategories() {
+  const existing = await dbLoadCategories();
+  if (existing.length > 0) return existing;
+  const inserted = [];
+  for (const c of defaultCategories) {
+    try { inserted.push(await dbInsertCat(c)); } catch(e) {}
+  }
+  return inserted;
+}
+
+// ==================== LOADING UI ====================
+function showPageLoader(msg = 'กำลังโหลด...') {
+  let el = document.getElementById('page-loader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'page-loader';
+    el.style.cssText = `
+      position:fixed;inset:0;z-index:9999;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+      background:rgba(15,12,41,0.85);backdrop-filter:blur(10px);
+    `;
+    el.innerHTML = `
+      <div class="spinner"></div>
+      <div id="page-loader-msg" style="color:#e2e8f0;font-size:14px;font-weight:600;">${msg}</div>
+    `;
+    document.body.appendChild(el);
+  } else {
+    document.getElementById('page-loader-msg').textContent = msg;
+    el.style.display = 'flex';
+  }
+}
+function hidePageLoader() {
+  const el = document.getElementById('page-loader');
+  if (el) el.style.display = 'none';
+}
+
+// ==================== SUPABASE SETUP PAGE ====================
+function showSetupPage() {
+  let el = document.getElementById('setup-page');
+  if (el) { el.style.display = 'flex'; return; }
+
+  el = document.createElement('div');
+  el.id = 'setup-page';
+  el.style.cssText = `
+    position:fixed;inset:0;z-index:600;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    background:linear-gradient(135deg,#0f0c29,#1a1040,#24243e);
+  `;
+  el.innerHTML = `
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:360px;height:360px;
+      background:radial-gradient(circle,rgba(99,102,241,0.25),transparent 70%);
+      pointer-events:none;"></div>
+    <div class="glass rounded-3xl p-7 w-full max-w-md fade-in" style="position:relative;z-index:1;">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-3"
+          style="background:linear-gradient(135deg,#3ECF8E,#1a9e6e);">
+          <span style="font-size:26px;">🗄️</span>
+        </div>
+        <h2 class="text-xl font-bold" style="background:linear-gradient(135deg,#3ECF8E,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+          เชื่อมต่อ Supabase
+        </h2>
+        <p class="text-xs mt-1 text-secondary">กรอก Supabase URL และ API Key เพื่อเริ่มใช้งาน</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Supabase Project URL</label>
+        <input type="text" class="form-input" id="setup-url"
+          placeholder="https://xxxxxxxxxxxx.supabase.co"
+          value="${SUPA_URL}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Anon / Public API Key</label>
+        <input type="text" class="form-input" id="setup-key"
+          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          value="${SUPA_KEY}" style="font-size:11px;"/>
+      </div>
+
+      <!-- SQL Guide toggle -->
+      <div class="mb-4">
+        <button onclick="toggleSqlGuide()" class="text-xs font-semibold flex items-center gap-1" style="color:#6366f1;background:none;border:none;cursor:pointer;padding:0;">
+          <span id="sql-arrow">▶</span> ดูคำสั่ง SQL สำหรับสร้างตาราง
+        </button>
+        <div id="sql-guide" style="display:none;margin-top:10px;">
+          <div style="
+            background:rgba(0,0,0,0.4);border:1px solid rgba(99,102,241,0.3);
+            border-radius:12px;padding:12px;font-family:monospace;font-size:10.5px;
+            color:#a5b4fc;line-height:1.6;overflow-x:auto;white-space:pre;
+          ">create table transactions (
+  id bigint generated always as identity primary key,
+  date date not null,
+  amount numeric(12,2) not null,
+  type text not null,
+  category text not null,
+  note text,
+  created_at timestamptz default now()
+);
+
+create table categories (
+  id bigint generated always as identity primary key,
+  name text not null,
+  type text not null,
+  created_at timestamptz default now()
+);
+
+-- เปิด RLS (ถ้าต้องการ)
+alter table transactions enable row level security;
+alter table categories enable row level security;
+create policy "allow all" on transactions for all using (true);
+create policy "allow all" on categories for all using (true);</div>
+        </div>
+      </div>
+
+      <div id="setup-status" style="display:none;" class="mb-4"></div>
+
+      <button class="btn-gradient ripple w-full py-3 font-bold" onclick="saveSupabaseConfig()">
+        🔌 เชื่อมต่อและบันทึก
+      </button>
+      <div class="text-center mt-3">
+        <button onclick="useLocalFallback()" class="text-xs text-secondary hover:text-indigo-400 transition-colors" style="background:none;border:none;cursor:pointer;">
+          ใช้งานแบบออฟไลน์ (localStorage) แทน →
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(el);
+}
+
+function toggleSqlGuide() {
+  const el = document.getElementById('sql-guide');
+  const arrow = document.getElementById('sql-arrow');
+  const show = el.style.display === 'none';
+  el.style.display = show ? 'block' : 'none';
+  arrow.textContent = show ? '▼' : '▶';
+}
+
+async function saveSupabaseConfig() {
+  const url = document.getElementById('setup-url').value.trim().replace(/\/$/, '');
+  const key = document.getElementById('setup-key').value.trim();
+  const statusEl = document.getElementById('setup-status');
+
+  if (!url || !key) {
+    showSetupStatus('error', '⚠️ กรุณากรอก URL และ API Key ให้ครบ');
+    return;
+  }
+  if (!url.startsWith('https://')) {
+    showSetupStatus('error', '⚠️ URL ต้องขึ้นต้นด้วย https://');
+    return;
+  }
+
+  showSetupStatus('loading', '🔄 กำลังทดสอบการเชื่อมต่อ...');
+
+  SUPA_URL = url;
+  SUPA_KEY = key;
+
+  try {
+    // Try fetching transactions table (may be empty - that's fine)
+    const testRes = await fetch(`${SUPA_URL}/rest/v1/transactions?limit=1`, { headers: supa.headers() });
+    if (!testRes.ok && testRes.status !== 406) {
+      throw new Error(`HTTP ${testRes.status} — ตรวจสอบ URL/Key และ RLS policy`);
+    }
+
+    localStorage.setItem('supa_url', SUPA_URL);
+    localStorage.setItem('supa_key', SUPA_KEY);
+
+    showSetupStatus('success', '✅ เชื่อมต่อสำเร็จ! กำลังโหลดข้อมูล...');
+    setTimeout(() => {
+      document.getElementById('setup-page').style.display = 'none';
+      document.getElementById('login-page').style.display = 'flex';
+    }, 1000);
+  } catch (err) {
+    showSetupStatus('error', `❌ เชื่อมต่อไม่สำเร็จ: ${err.message}`);
+    SUPA_URL = localStorage.getItem('supa_url') || '';
+    SUPA_KEY = localStorage.getItem('supa_key') || '';
+  }
+}
+
+function showSetupStatus(type, msg) {
+  const el = document.getElementById('setup-status');
+  if (!el) return;
+  el.style.display = 'block';
+  const colors = { error: 'rgba(239,68,68,0.15)', success: 'rgba(16,185,129,0.15)', loading: 'rgba(99,102,241,0.15)' };
+  const textColors = { error: '#f87171', success: '#34d399', loading: '#818cf8' };
+  el.style.cssText = `display:block;padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;
+    background:${colors[type]};color:${textColors[type]};`;
+  el.textContent = msg;
+}
+
+function useLocalFallback() {
+  localStorage.removeItem('supa_url');
+  localStorage.removeItem('supa_key');
+  SUPA_URL = ''; SUPA_KEY = '';
+  const el = document.getElementById('setup-page');
+  if (el) el.style.display = 'none';
+  document.getElementById('login-page').style.display = 'flex';
+  showToast('ใช้งานแบบออฟไลน์ (localStorage)', 'info');
+}
+
+// ==================== LOCAL FALLBACK ====================
+// Used when Supabase is not configured
+function isSupabaseReady() { return SUPA_URL && SUPA_KEY; }
+
+// LocalStorage fallback helpers
 function genDemoData() {
   const today = new Date();
   const txs = [];
@@ -1320,68 +1699,127 @@ function genDemoData() {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const ds = d.toISOString().split('T')[0];
-
-    // 1-3 income per day
     const incomes = Math.floor(Math.random() * 2) + 1;
     for (let j = 0; j < incomes; j++) {
-      txs.push({
-        id: id++,
-        date: ds,
-        amount: Math.floor(Math.random() * 2000) + 500,
-        type: 'income',
-        category: Math.random() > 0.5 ? 'เงินสด' : 'เงินโอน',
-        note: ['ขายมาม่า','ขายขนม','ขายน้ำ','รายรับประจำวัน'][Math.floor(Math.random()*4)]
-      });
+      txs.push({ id: id++, date: ds, amount: Math.floor(Math.random()*2000)+500,
+        type: 'income', category: Math.random()>0.5?'เงินสด':'เงินโอน',
+        note: ['ขายมาม่า','ขายขนม','ขายน้ำ','รายรับประจำวัน'][Math.floor(Math.random()*4)] });
     }
-
-    // 1-3 expense per day
     const expCats = ['วัตถุดิบทำมาม่า','วัตถุดิบทำขนม','วัตถุดิบทำน้ำ','ค่าจ้าง','อื่นๆ'];
     const exps = Math.floor(Math.random() * 2) + 1;
     for (let j = 0; j < exps; j++) {
-      txs.push({
-        id: id++,
-        date: ds,
-        amount: Math.floor(Math.random() * 800) + 200,
-        type: 'expense',
-        category: expCats[Math.floor(Math.random()*expCats.length)],
-        note: ''
-      });
+      txs.push({ id: id++, date: ds, amount: Math.floor(Math.random()*800)+200,
+        type: 'expense', category: expCats[Math.floor(Math.random()*expCats.length)], note: '' });
     }
   }
   return txs;
 }
 
-function loadData() {
-  const raw = localStorage.getItem('fm_transactions');
-  if (!raw) return genDemoData();
-  return JSON.parse(raw);
+// ==================== UNIFIED DATA API ====================
+// All callers use these — they route to Supabase OR localStorage
+
+async function loadTransactions() {
+  if (isSupabaseReady()) {
+    return await dbLoadTransactions();
+  } else {
+    const raw = localStorage.getItem('fm_transactions');
+    return raw ? JSON.parse(raw) : genDemoData();
+  }
 }
 
-function saveData(txs) {
-  localStorage.setItem('fm_transactions', JSON.stringify(txs));
+async function insertTransaction(tx) {
+  if (isSupabaseReady()) {
+    return await dbInsertTx(tx);
+  } else {
+    const all = await loadTransactions();
+    const maxId = all.length ? Math.max(...all.map(t=>t.id)) : 0;
+    const newTx = { ...tx, id: maxId + 1 };
+    localStorage.setItem('fm_transactions', JSON.stringify([...all, newTx]));
+    return newTx;
+  }
 }
 
-function loadCategories() {
-  const raw = localStorage.getItem('fm_categories');
-  if (!raw) return defaultCategories;
-  return JSON.parse(raw);
+async function updateTransaction(tx) {
+  if (isSupabaseReady()) {
+    return await dbUpdateTx(tx);
+  } else {
+    const all = await loadTransactions();
+    const idx = all.findIndex(t => t.id === tx.id);
+    if (idx > -1) all[idx] = tx;
+    localStorage.setItem('fm_transactions', JSON.stringify(all));
+    return tx;
+  }
 }
 
-function saveCategories(cats) {
-  localStorage.setItem('fm_categories', JSON.stringify(cats));
+async function deleteTransaction(id) {
+  if (isSupabaseReady()) {
+    await dbDeleteTx(id);
+  } else {
+    const all = await loadTransactions();
+    localStorage.setItem('fm_transactions', JSON.stringify(all.filter(t => t.id !== id)));
+  }
 }
 
-let transactions = loadData();
-let categories = loadCategories();
+async function loadCategoriesData() {
+  if (isSupabaseReady()) {
+    const rows = await dbLoadCategories();
+    if (rows.length === 0) return await seedCategories();
+    return rows;
+  } else {
+    const raw = localStorage.getItem('fm_categories');
+    return raw ? JSON.parse(raw) : defaultCategories;
+  }
+}
+
+async function insertCategory(cat) {
+  if (isSupabaseReady()) {
+    return await dbInsertCat(cat);
+  } else {
+    const all = [...categories];
+    const maxId = all.length ? Math.max(...all.map(c=>c.id)) : 0;
+    const newCat = { ...cat, id: maxId + 1 };
+    localStorage.setItem('fm_categories', JSON.stringify([...all, newCat]));
+    return newCat;
+  }
+}
+
+async function updateCategory(cat) {
+  if (isSupabaseReady()) {
+    return await dbUpdateCat(cat);
+  } else {
+    const all = [...categories];
+    const idx = all.findIndex(c => c.id === cat.id);
+    if (idx > -1) all[idx] = cat;
+    localStorage.setItem('fm_categories', JSON.stringify(all));
+    return cat;
+  }
+}
+
+async function deleteCategory(id) {
+  if (isSupabaseReady()) {
+    await dbDeleteCat(id);
+  } else {
+    const all = categories.filter(c => c.id !== id);
+    localStorage.setItem('fm_categories', JSON.stringify(all));
+  }
+}
+
+async function deleteAllData() {
+  if (isSupabaseReady()) {
+    const all = await dbLoadTransactions();
+    for (const t of all) { try { await dbDeleteTx(t.id); } catch(e) {} }
+  } else {
+    localStorage.removeItem('fm_transactions');
+  }
+}
 
 // ==================== AUTH ====================
-function doLogin() {
+async function doLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value.trim();
   if (u === 'admin' && p === '1234') {
     document.getElementById('login-page').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    initApp();
+    await initApp();
     showToast('ยินดีต้อนรับ! เข้าสู่ระบบสำเร็จ 🎉', 'success');
   } else {
     showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
@@ -1488,10 +1926,244 @@ function closeSidebar() {
 }
 
 // ==================== NOTIFICATION / PROFILE PANELS ====================
-function toggleNotif() {
-  document.getElementById('notif-panel').classList.toggle('show');
-  document.getElementById('profile-panel').classList.remove('show');
+// ==================== NOTIFICATION SYSTEM ====================
+// Notification types: income_added, expense_added, high_expense, daily_summary, profit_alert, low_profit
+let notifications = [];
+let currentNotifTab = 'all';
+
+function loadNotifications() {
+  const raw = localStorage.getItem('fm_notifications');
+  if (!raw) return [];
+  return JSON.parse(raw);
 }
+
+function saveNotifications() {
+  localStorage.setItem('fm_notifications', JSON.stringify(notifications));
+}
+
+function addNotification(type, title, body, icon, iconClass, actionPage) {
+  const now = new Date();
+  notifications.unshift({
+    id: Date.now() + Math.random(),
+    type, title, body, icon, iconClass,
+    actionPage: actionPage || null,
+    read: false,
+    time: now.toISOString()
+  });
+  // Keep only last 50
+  if (notifications.length > 50) notifications = notifications.slice(0, 50);
+  saveNotifications();
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function updateNotifBadge() {
+  const unread = notifications.filter(n => !n.read).length;
+  const badge = document.getElementById('notif-badge-count');
+  if (!badge) return;
+  if (unread > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = unread > 9 ? '9+' : unread;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  let items = currentNotifTab === 'unread'
+    ? notifications.filter(n => !n.read)
+    : notifications;
+
+  if (!items.length) {
+    list.innerHTML = `
+      <div style="text-align:center;padding:32px 16px;">
+        <div style="font-size:36px;margin-bottom:10px;">🔔</div>
+        <div style="font-size:13px;font-weight:600;" class="text-primary-text">ไม่มีการแจ้งเตือน</div>
+        <div style="font-size:11px;" class="text-secondary mt-1">การแจ้งเตือนจะปรากฏที่นี่</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(n => `
+    <div class="notif-item ${n.read ? '' : 'unread'}" onclick="readNotif('${n.id}','${n.actionPage||''}')">
+      <div class="icon-box ${n.iconClass}" style="width:34px;height:34px;font-size:14px;flex-shrink:0;">${n.icon}</div>
+      <div style="flex:1;min-width:0;padding-right:12px;">
+        <div class="notif-item-title">${n.title}</div>
+        <div class="notif-item-body">${n.body}</div>
+        <div class="notif-item-time">${timeAgo(n.time)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function readNotif(id, actionPage) {
+  const n = notifications.find(x => String(x.id) === String(id));
+  if (n) { n.read = true; saveNotifications(); updateNotifBadge(); renderNotifList(); }
+  if (actionPage) { toggleNotif(); navTo(actionPage); }
+}
+
+function markAllRead() {
+  notifications.forEach(n => n.read = true);
+  saveNotifications();
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function clearAllNotif() {
+  notifications = [];
+  saveNotifications();
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function setNotifTab(el, tab) {
+  document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentNotifTab = tab;
+  renderNotifList();
+}
+
+function timeAgo(isoString) {
+  const now = new Date();
+  const t = new Date(isoString);
+  const diff = Math.floor((now - t) / 1000);
+  if (diff < 60) return 'เมื่อสักครู่';
+  if (diff < 3600) return `${Math.floor(diff/60)} นาทีที่แล้ว`;
+  if (diff < 86400) return `${Math.floor(diff/3600)} ชั่วโมงที่แล้ว`;
+  return `${Math.floor(diff/86400)} วันที่แล้ว`;
+}
+
+// Generate smart notifications from transaction data
+function generateSmartNotifications() {
+  notifications = loadNotifications();
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayTx = transactions.filter(t => t.date === today);
+  const todayIncome = todayTx.filter(t => t.type==='income').reduce((a,b)=>a+b.amount, 0);
+  const todayExpense = todayTx.filter(t => t.type==='expense').reduce((a,b)=>a+b.amount, 0);
+  const todayProfit = todayIncome - todayExpense;
+
+  // Check if we've already generated today's summary
+  const hasTodaySummary = notifications.some(n => n.type === 'daily_summary' && n.time.startsWith(today));
+
+  // Daily summary notification (generate once per day)
+  if (!hasTodaySummary && todayTx.length > 0) {
+    addNotification(
+      'daily_summary',
+      '📊 สรุปยอดวันนี้',
+      `รายรับ ฿${todayIncome.toLocaleString()} | รายจ่าย ฿${todayExpense.toLocaleString()} | กำไร ฿${todayProfit.toLocaleString()}`,
+      '📊', 'icon-blue', 'dashboard'
+    );
+  }
+
+  // Low profit alert
+  const income30 = transactions.filter(t => {
+    const d = new Date(t.date);
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+    return t.type==='income' && d >= cutoff;
+  }).reduce((a,b)=>a+b.amount,0);
+  const expense30 = transactions.filter(t => {
+    const d = new Date(t.date);
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+    return t.type==='expense' && d >= cutoff;
+  }).reduce((a,b)=>a+b.amount,0);
+  const pct30 = income30>0 ? Math.round(((income30-expense30)/income30)*100) : 0;
+
+  const hasAlertToday = notifications.some(n => n.type === 'profit_alert' && n.time.startsWith(today));
+  if (!hasAlertToday && pct30 < 20 && income30 > 0) {
+    addNotification(
+      'profit_alert',
+      '⚠️ กำไรต่ำกว่าเกณฑ์',
+      `กำไร 30 วันอยู่ที่ ${pct30}% ต่ำกว่า 20% ควรตรวจสอบค่าใช้จ่าย`,
+      '⚠️', 'icon-orange', 'reports'
+    );
+  }
+
+  // High expense alert (top expense category this week)
+  const week = new Date(); week.setDate(week.getDate()-7);
+  const weekExpenses = transactions.filter(t => t.type==='expense' && new Date(t.date) >= week);
+  if (weekExpenses.length > 0) {
+    const catTotals = {};
+    weekExpenses.forEach(t => { catTotals[t.category] = (catTotals[t.category]||0) + t.amount; });
+    const topCat = Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
+    const hasHighExpAlert = notifications.some(n => n.type === 'high_expense' && n.time.startsWith(today));
+    if (!hasHighExpAlert && topCat && topCat[1] > 1000) {
+      addNotification(
+        'high_expense',
+        '💸 ค่าใช้จ่ายสูงสัปดาห์นี้',
+        `หมวด "${topCat[0]}" ใช้ไป ฿${topCat[1].toLocaleString()} (7 วัน)`,
+        '💸', 'icon-pink', 'reports'
+      );
+    }
+  }
+
+  updateNotifBadge();
+  renderNotifList();
+}
+
+// Called after every transaction save
+function pushTransactionNotif(tx, isEdit) {
+  if (isEdit) {
+    addNotification(
+      'tx_edit',
+      '✏️ แก้ไขรายการแล้ว',
+      `${tx.type==='income'?'รายรับ':'รายจ่าย'} ${tx.category} ฿${tx.amount.toLocaleString()}`,
+      tx.type==='income'?'💰':'🛒',
+      tx.type==='income'?'icon-green':'icon-orange',
+      'transactions'
+    );
+  } else {
+    addNotification(
+      tx.type==='income' ? 'income_added' : 'expense_added',
+      tx.type==='income' ? '💰 เพิ่มรายรับใหม่' : '🛒 เพิ่มรายจ่ายใหม่',
+      `${tx.category} ฿${tx.amount.toLocaleString()}${tx.note?' — '+tx.note:''}`,
+      tx.type==='income'?'💰':'🛒',
+      tx.type==='income'?'icon-green':'icon-orange',
+      'transactions'
+    );
+  }
+  // Check profit after each add
+  checkProfitWarning();
+}
+
+function pushDeleteNotif(tx) {
+  addNotification(
+    'tx_delete',
+    '🗑️ ลบรายการแล้ว',
+    `${tx.type==='income'?'รายรับ':'รายจ่าย'} ${tx.category} ฿${tx.amount.toLocaleString()}`,
+    '🗑️', 'icon-other', 'transactions'
+  );
+}
+
+function checkProfitWarning() {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayTx = transactions.filter(t => t.date === todayStr);
+  const income = todayTx.filter(t=>t.type==='income').reduce((a,b)=>a+b.amount,0);
+  const expense = todayTx.filter(t=>t.type==='expense').reduce((a,b)=>a+b.amount,0);
+  if (income > 0 && expense > income * 0.8) {
+    const hasWarn = notifications.some(n => n.type==='expense_warn_today' && n.time.startsWith(todayStr));
+    if (!hasWarn) {
+      addNotification(
+        'expense_warn_today',
+        '🚨 รายจ่ายสูงวันนี้',
+        `รายจ่ายถึง ${Math.round((expense/income)*100)}% ของรายรับวันนี้ ควรระวัง!`,
+        '🚨', 'icon-pink', 'dashboard'
+      );
+    }
+  }
+}
+
+function toggleNotif() {
+  const panel = document.getElementById('notif-panel');
+  panel.classList.toggle('show');
+  document.getElementById('profile-panel').classList.remove('show');
+  if (panel.classList.contains('show')) {
+    renderNotifList();
+  }
+}
+
 function toggleProfile() {
   document.getElementById('profile-panel').classList.toggle('show');
   document.getElementById('notif-panel').classList.remove('show');
@@ -1787,7 +2459,7 @@ function updateCategoryOptions() {
   sel.innerHTML = cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
 }
 
-function saveTx() {
+async function saveTx() {
   const date = document.getElementById('tx-date').value;
   const amount = parseFloat(document.getElementById('tx-amount').value);
   const type = document.getElementById('tx-type').value;
@@ -1799,36 +2471,47 @@ function saveTx() {
     return;
   }
 
-  if (editTxId) {
-    const idx = transactions.findIndex(t => t.id === editTxId);
-    if (idx > -1) {
-      transactions[idx] = { ...transactions[idx], date, amount, type, category, note };
+  // Disable save button to prevent double-click
+  const btn = document.querySelector('#tx-modal .btn-gradient');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...'; }
+
+  try {
+    if (editTxId) {
+      const updated = { id: editTxId, date, amount, type, category, note };
+      const saved = await updateTransaction(updated);
+      const idx = transactions.findIndex(t => t.id === editTxId);
+      if (idx > -1) transactions[idx] = saved;
       showToast('แก้ไขรายการสำเร็จ ✏️', 'success');
+      pushTransactionNotif(saved, true);
+    } else {
+      const newTx = await insertTransaction({ date, amount, type, category, note });
+      transactions.unshift(newTx);
+      showToast('เพิ่มรายการสำเร็จ ✅', 'success');
+      pushTransactionNotif(newTx, false);
     }
-  } else {
-    const maxId = transactions.length ? Math.max(...transactions.map(t=>t.id)) : 0;
-    transactions.push({ id: maxId+1, date, amount, type, category, note });
-    saveTransactionToCloud({
-    type,
-    category,
-    amount,
-    note
-});
-    showToast('เพิ่มรายการสำเร็จ ✅', 'success');
+    closeTxModal();
+    renderTransactions();
+    if (currentPage === 'dashboard') updateDashboard();
+  } catch (err) {
+    showToast(`บันทึกไม่สำเร็จ: ${err.message}`, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 บันทึก'; }
   }
-  saveData(transactions);
-  closeTxModal();
-  renderTransactions();
-  if (currentPage === 'dashboard') updateDashboard();
 }
 
 function deleteTx(id) {
-  showConfirm('ลบรายการ', 'คุณแน่ใจว่าต้องการลบรายการนี้?', '🗑️', () => {
-    transactions = transactions.filter(t => t.id !== id);
-    saveData(transactions);
-    renderTransactions();
-    if (currentPage === 'dashboard') updateDashboard();
-    showToast('ลบรายการแล้ว', 'info');
+  const tx = transactions.find(t => t.id === id);
+  showConfirm('ลบรายการ', 'คุณแน่ใจว่าต้องการลบรายการนี้?', '🗑️', async () => {
+    try {
+      await deleteTransaction(id);
+      transactions = transactions.filter(t => t.id !== id);
+      renderTransactions();
+      if (currentPage === 'dashboard') updateDashboard();
+      if (tx) pushDeleteNotif(tx);
+      showToast('ลบรายการแล้ว', 'info');
+    } catch (err) {
+      showToast(`ลบไม่สำเร็จ: ${err.message}`, 'error');
+    }
   });
 }
 
@@ -1903,31 +2586,44 @@ function closeCatModal() {
   document.getElementById('cat-modal').classList.remove('show');
 }
 
-function saveCat() {
+async function saveCat() {
   const name = document.getElementById('cat-name').value.trim();
   const type = document.getElementById('cat-type').value;
   if (!name) { showToast('กรุณากรอกชื่อหมวดหมู่', 'error'); return; }
 
-  if (editCatId) {
-    const idx = categories.findIndex(c => c.id === editCatId);
-    if (idx > -1) { categories[idx].name = name; categories[idx].type = type; }
-    showToast('แก้ไขหมวดหมู่สำเร็จ', 'success');
-  } else {
-    const maxId = categories.length ? Math.max(...categories.map(c=>c.id)) : 0;
-    categories.push({ id: maxId+1, name, type });
-    showToast('เพิ่มหมวดหมู่สำเร็จ ✅', 'success');
+  const btn = document.querySelector('#cat-modal .btn-gradient');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...'; }
+
+  try {
+    if (editCatId) {
+      const updated = await updateCategory({ id: editCatId, name, type });
+      const idx = categories.findIndex(c => c.id === editCatId);
+      if (idx > -1) categories[idx] = updated;
+      showToast('แก้ไขหมวดหมู่สำเร็จ', 'success');
+    } else {
+      const newCat = await insertCategory({ name, type });
+      categories.push(newCat);
+      showToast('เพิ่มหมวดหมู่สำเร็จ ✅', 'success');
+    }
+    closeCatModal();
+    renderCategories();
+  } catch (err) {
+    showToast(`บันทึกไม่สำเร็จ: ${err.message}`, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 บันทึก'; }
   }
-  saveCategories(categories);
-  closeCatModal();
-  renderCategories();
 }
 
 function deleteCat(id) {
-  showConfirm('ลบหมวดหมู่', 'ต้องการลบหมวดหมู่นี้หรือไม่?', '🗑️', () => {
-    categories = categories.filter(c => c.id !== id);
-    saveCategories(categories);
-    renderCategories();
-    showToast('ลบหมวดหมู่แล้ว', 'info');
+  showConfirm('ลบหมวดหมู่', 'ต้องการลบหมวดหมู่นี้หรือไม่?', '🗑️', async () => {
+    try {
+      await deleteCategory(id);
+      categories = categories.filter(c => c.id !== id);
+      renderCategories();
+      showToast('ลบหมวดหมู่แล้ว', 'info');
+    } catch (err) {
+      showToast(`ลบไม่สำเร็จ: ${err.message}`, 'error');
+    }
   });
 }
 
@@ -2061,11 +2757,18 @@ function exportExcel() {
 }
 
 function clearAllData() {
-  showConfirm('ลบข้อมูลทั้งหมด', 'การดำเนินการนี้จะลบข้อมูลทั้งหมดและไม่สามารถกู้คืนได้!', '⚠️', () => {
-    transactions = [];
-    saveData(transactions);
-    showToast('ลบข้อมูลทั้งหมดแล้ว', 'info');
-    updateDashboard();
+  showConfirm('ลบข้อมูลทั้งหมด', 'การดำเนินการนี้จะลบรายการทั้งหมดและไม่สามารถกู้คืนได้!', '⚠️', async () => {
+    showPageLoader('กำลังลบข้อมูลทั้งหมด...');
+    try {
+      await deleteAllData();
+      transactions = [];
+      showToast('ลบข้อมูลทั้งหมดแล้ว', 'info');
+      updateDashboard();
+    } catch (err) {
+      showToast(`ลบไม่สำเร็จ: ${err.message}`, 'error');
+    } finally {
+      hidePageLoader();
+    }
   });
 }
 
@@ -2113,17 +2816,59 @@ document.addEventListener('click', function(e) {
 });
 
 // ==================== INIT ====================
-function initApp() {
-  transactions = loadData();
-  categories = loadCategories();
+async function initApp() {
+  document.getElementById('app').style.display = 'block';
+  showPageLoader('กำลังเชื่อมต่อฐานข้อมูล...');
+
+  try {
+    showPageLoader('กำลังโหลดหมวดหมู่...');
+    categories = await loadCategoriesData();
+
+    showPageLoader('กำลังโหลดรายการ...');
+    transactions = await loadTransactions();
+
+    // Update DB status badge in settings
+    updateDbStatusBadge();
+
+  } catch (err) {
+    showToast(`โหลดข้อมูลไม่สำเร็จ: ${err.message}`, 'error');
+    // Fallback to empty
+    transactions = [];
+    categories = defaultCategories;
+  } finally {
+    hidePageLoader();
+  }
+
   navTo('dashboard');
-  // Responsive navbar on desktop
   if (window.innerWidth >= 768) {
     document.getElementById('navbar').style.left = '260px';
     document.getElementById('navbar').style.width = 'calc(100% - 260px)';
     document.getElementById('main-content').style.marginLeft = '260px';
   }
+  generateSmartNotifications();
 }
+
+function updateDbStatusBadge() {
+  const el = document.getElementById('db-status-badge');
+  if (!el) return;
+  if (isSupabaseReady()) {
+    el.innerHTML = `<span style="color:#10b981;font-weight:700;">● Supabase PostgreSQL</span>
+      <span class="text-xs text-secondary ml-2">${SUPA_URL.replace('https://','').split('.')[0]}</span>
+      <button onclick="showSetupPage()" class="ml-3 text-xs" style="color:#6366f1;background:none;border:none;cursor:pointer;">เปลี่ยน</button>`;
+  } else {
+    el.innerHTML = `<span style="color:#f59e0b;font-weight:700;">● localStorage (ออฟไลน์)</span>
+      <button onclick="showSetupPage()" class="ml-3 text-xs btn-gradient" style="padding:3px 10px;">เชื่อมต่อ Supabase</button>`;
+  }
+}
+
+// Boot sequence: check if Supabase configured → show setup if not, else show login
+(function boot() {
+  if (!SUPA_URL || !SUPA_KEY) {
+    // Show setup page first time
+    showSetupPage();
+  }
+  // Login page is already visible by default; setup page layered on top if needed
+})();
 
 // Handle resize
 window.addEventListener('resize', () => {
@@ -2164,39 +2909,5 @@ window.addEventListener('resize', updateChartGrid);
 updateChartGrid();
 
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = 'https://htnhurnuhmjbwpixyyvn.supabase.co';
-
-const SUPABASE_KEY = 'sb_publishable_wxRvzUmLYem7RWq5jmi0gg_zNbXWX_A';
-
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-console.log('Supabase Connected');
-
-async function saveTransactionToCloud(transaction) {
-
-    const { data, error } = await supabaseClient
-        .from('transactions')
-        .insert([{
-            type: transaction.type,
-            category: transaction.category,
-            amount: transaction.amount,
-            note: transaction.note
-        }]);
-
-    if (error) {
-        console.error(error);
-        alert('บันทึกออนไลน์ไม่สำเร็จ');
-    } else {
-        console.log('Saved to Supabase');
-    }
-}
-</script>
-
 </body>
 </html>
