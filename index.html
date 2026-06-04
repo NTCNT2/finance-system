@@ -779,6 +779,60 @@
     margin-top: 3px; font-weight: 600;
   }
 
+  /* ===== REPORT CHIPS ===== */
+  .rep-chip {
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1.5px solid transparent;
+    font-family: 'Sarabun', sans-serif; transition: all 0.22s;
+    white-space: nowrap;
+  }
+  .dark .rep-chip { background: rgba(255,255,255,0.07); color: #94a3b8; }
+  .light .rep-chip { background: rgba(99,102,241,0.08); color: #64748b; }
+  .rep-chip.active {
+    background: linear-gradient(135deg,#6366f1,#a855f7);
+    color: white; border-color: transparent;
+    box-shadow: 0 3px 12px rgba(99,102,241,0.35);
+  }
+  .rep-chip:hover:not(.active) { border-color: rgba(99,102,241,0.4); color: #6366f1; }
+
+  .rep-chip-sm {
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    border: 1.5px solid transparent;
+    font-family: 'Sarabun', sans-serif; transition: all 0.22s;
+  }
+  .dark .rep-chip-sm { background: rgba(255,255,255,0.07); color: #94a3b8; }
+  .light .rep-chip-sm { background: rgba(99,102,241,0.08); color: #64748b; }
+  .rep-chip-sm.active {
+    background: linear-gradient(135deg,#6366f1,#a855f7); color: white;
+  }
+
+  /* chart type toggle */
+  .rep-chart-btn {
+    padding: 4px 12px; border-radius: 8px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    border: none; font-family: 'Sarabun', sans-serif; transition: all 0.2s;
+  }
+  .dark .rep-chart-btn { background: rgba(255,255,255,0.07); color: #94a3b8; }
+  .light .rep-chart-btn { background: rgba(99,102,241,0.08); color: #64748b; }
+  .rep-chart-btn.active {
+    background: linear-gradient(135deg,#6366f1,#a855f7); color: white;
+  }
+
+  /* delta badge */
+  .delta-up   { color: #10b981; font-weight: 700; }
+  .delta-down { color: #ef4444; font-weight: 700; }
+  .delta-flat { color: #94a3b8; font-weight: 600; }
+
+  /* cat row in breakdown */
+  .cat-row-bar { transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+
+  /* responsive 2-col on very small screens */
+  @media (max-width: 400px) {
+    #rep-2col { grid-template-columns: 1fr !important; }
+  }
+
   /* Pulse animation for unread badge */
   @keyframes pulse-ring {
     0% { box-shadow: 0 0 0 0 rgba(236,72,153,0.5); }
@@ -786,6 +840,35 @@
     100% { box-shadow: 0 0 0 0 rgba(236,72,153,0); }
   }
   .notif-badge { animation: pulse-ring 2s infinite; }
+
+  /* === REPORT PAGE - missing components CSS === */
+  .rep-kpi-card { position:relative; overflow:hidden; min-height:122px; transition:transform 0.3s ease,box-shadow 0.3s ease; }
+  .rep-kpi-card:hover { transform:translateY(-5px); box-shadow:0 18px 45px rgba(99,102,241,0.22); }
+  .rep-kpi-amount { font-size:1.3rem; font-weight:800; font-family:'Kanit',sans-serif; letter-spacing:-0.5px; margin-top:2px; }
+  .dark  .rep-kpi-amount { color:#e2e8f0; }
+  .light .rep-kpi-amount { color:#1e1b4b; }
+  .rep-delta-badge { font-size:10px; white-space:nowrap; text-align:right; line-height:1.3; }
+  .rep-summary-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:14px; padding:10px 14px; border-radius:12px; border:1.5px solid rgba(99,102,241,0.2); background:rgba(99,102,241,0.06); }
+  .rep-custom-panel { display:none; animation:slideUp 0.3s ease; }
+  .rep-custom-inner { padding:16px; border-radius:16px; margin-top:8px; border:1.5px dashed rgba(99,102,241,0.3); }
+  .dark  .rep-custom-inner { background:rgba(99,102,241,0.04); }
+  .light .rep-custom-inner { background:rgba(99,102,241,0.03); }
+  .rep-date-input { font-size:13px !important; padding:10px 14px 10px 40px !important; }
+  .rep-shortcut-btn { padding:4px 12px; border-radius:999px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid rgba(99,102,241,0.3); background:rgba(99,102,241,0.07); color:#6366f1; font-family:'Sarabun',sans-serif; transition:all 0.2s; }
+  .rep-shortcut-btn:hover { background:rgba(99,102,241,0.18); border-color:#6366f1; transform:translateY(-1px); }
+  .rep-info-pill { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; flex-wrap:wrap; }
+  .dark  .rep-info-pill { background:rgba(255,255,255,0.04); }
+  .light .rep-info-pill { background:rgba(99,102,241,0.05); }
+  .donut-legend-item { display:flex; align-items:center; gap:6px; padding:3px 0; }
+  .donut-legend-dot { width:8px; height:8px; border-radius:3px; flex-shrink:0; }
+  .donut-legend-label { font-size:11px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .dark  .donut-legend-label { color:#94a3b8; }
+  .light .donut-legend-label { color:#64748b; }
+  .donut-legend-val { font-size:11px; font-weight:700; flex-shrink:0; }
+  .dark  .donut-legend-val { color:#e2e8f0; }
+  .light .donut-legend-val { color:#1e1b4b; }
+  .rep-chip-custom { border-style:dashed !important; }
+  @media (max-width:400px) { #rep-kpi-grid { grid-template-columns:1fr !important; } }
 </style>
 </head>
 <body>
@@ -1115,50 +1198,300 @@
 
   <!-- ===== REPORTS PAGE ===== -->
   <div id="page-reports" class="page">
+
+    <!-- ══════════════════════════════════════════════
+         HEADER
+    ══════════════════════════════════════════════ -->
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-bold text-primary-text">รายงานสรุป</h2>
       <div class="flex gap-2">
         <button class="export-btn export-btn-pdf ripple text-xs" onclick="exportPDF()">📄 PDF</button>
-        <button class="export-btn export-btn-excel ripple text-xs" onclick="exportExcel()">📊 Excel</button>
+        <button class="export-btn export-btn-excel ripple text-xs" onclick="exportExcelReport()">📊 Excel</button>
       </div>
     </div>
 
-    <!-- Summary cards -->
-    <div class="grid grid-cols-2 gap-3 mb-5" style="gap:12px;">
-      <div class="stat-card glass">
-        <div class="icon-box icon-blue mb-3">💰</div>
+    <!-- ══════════════════════════════════════════════
+         DATE SELECTION PANEL
+    ══════════════════════════════════════════════ -->
+    <div class="glass rounded-2xl p-5 mb-5" id="rep-date-panel">
+
+      <!-- Section title -->
+      <div class="flex items-center gap-2 mb-4">
+        <div class="icon-box icon-blue" style="width:34px;height:34px;font-size:15px;">📅</div>
+        <div>
+          <div class="text-sm font-bold text-primary-text">เลือกช่วงเวลา</div>
+          <div class="text-xs text-secondary">กรองข้อมูลตามวันที่ที่ต้องการ</div>
+        </div>
+      </div>
+
+      <!-- ── Quick range chips ── -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button class="rep-chip active" data-range="today"      onclick="repSetChip(this,'today')">📌 วันนี้</button>
+        <button class="rep-chip"        data-range="7"          onclick="repSetChip(this,'7')">7 วัน</button>
+        <button class="rep-chip"        data-range="15"         onclick="repSetChip(this,'15')">15 วัน</button>
+        <button class="rep-chip"        data-range="30"         onclick="repSetChip(this,'30')">30 วัน</button>
+        <button class="rep-chip"        data-range="month"      onclick="repSetChip(this,'month')">เดือนนี้</button>
+        <button class="rep-chip"        data-range="lastmonth"  onclick="repSetChip(this,'lastmonth')">เดือนก่อน</button>
+        <button class="rep-chip"        data-range="year"       onclick="repSetChip(this,'year')">ปีนี้</button>
+        <button class="rep-chip rep-chip-custom" data-range="custom" onclick="repSetChip(this,'custom')">🗓️ กำหนดเอง</button>
+      </div>
+
+      <!-- ── Custom date picker (visible only when "กำหนดเอง" active) ── -->
+      <div id="rep-custom-dates" class="rep-custom-panel">
+        <div class="rep-custom-inner">
+          <!-- Divider -->
+          <div class="flex items-center gap-3 mb-4">
+            <div style="flex:1;height:1px;background:rgba(99,102,241,0.2);"></div>
+            <span class="text-xs font-bold text-secondary" style="white-space:nowrap;">กำหนดช่วงวันที่</span>
+            <div style="flex:1;height:1px;background:rgba(99,102,241,0.2);"></div>
+          </div>
+
+          <div class="grid gap-3 mb-3" style="grid-template-columns:1fr auto 1fr;align-items:end;">
+            <!-- Start Date -->
+            <div>
+              <label class="form-label">
+                <span style="color:#10b981;">●</span> วันที่เริ่มต้น
+              </label>
+              <div style="position:relative;">
+                <input type="date" class="form-input rep-date-input" id="rep-start-date"
+                       onchange="repApplyCustom()" style="padding-left:40px;"/>
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">📅</span>
+              </div>
+            </div>
+            <!-- Arrow -->
+            <div style="padding-bottom:14px;color:#6366f1;font-size:20px;font-weight:700;">→</div>
+            <!-- End Date -->
+            <div>
+              <label class="form-label">
+                <span style="color:#ef4444;">●</span> วันที่สิ้นสุด
+              </label>
+              <div style="position:relative;">
+                <input type="date" class="form-input rep-date-input" id="rep-end-date"
+                       onchange="repApplyCustom()" style="padding-left:40px;"/>
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">📅</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Validation message -->
+          <div id="rep-date-error" class="text-xs font-semibold mb-2" style="color:#ef4444;display:none;">
+            ⚠️ วันที่เริ่มต้นต้องน้อยกว่าหรือเท่ากับวันที่สิ้นสุด
+          </div>
+
+          <!-- Quick-fill shortcuts -->
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs text-secondary self-center">เลือกเร็ว:</span>
+            <button class="rep-shortcut-btn" onclick="repFillShortcut(7)">7 วันล่าสุด</button>
+            <button class="rep-shortcut-btn" onclick="repFillShortcut(14)">2 สัปดาห์</button>
+            <button class="rep-shortcut-btn" onclick="repFillShortcut(30)">1 เดือน</button>
+            <button class="rep-shortcut-btn" onclick="repFillShortcut(90)">3 เดือน</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Active range summary bar ── -->
+      <div class="rep-summary-bar" id="rep-summary-bar">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);flex-shrink:0;box-shadow:0 0 8px rgba(99,102,241,0.6);"></div>
+          <span class="text-xs font-bold text-primary-text" id="rep-range-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">วันนี้</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-secondary flex-shrink-0">
+          <span>พบ <strong class="text-primary-text" id="rep-tx-count">0</strong> รายการ</span>
+          <span id="rep-date-span-label" style="color:#6366f1;font-weight:600;"></span>
+        </div>
+      </div>
+
+    </div><!-- /rep-date-panel -->
+
+    <!-- ══════════════════════════════════════════════
+         KPI CARDS  (Real-time animated)
+    ══════════════════════════════════════════════ -->
+    <div class="grid grid-cols-2 gap-3 mb-5" style="gap:12px;" id="rep-kpi-grid">
+
+      <!-- Income -->
+      <div class="stat-card glass rep-kpi-card" id="kpi-income">
+        <div class="flex items-start justify-between mb-2">
+          <div class="icon-box icon-blue" style="width:40px;height:40px;font-size:18px;">💰</div>
+          <div id="rep-income-delta" class="rep-delta-badge"></div>
+        </div>
         <div class="text-xs text-secondary mb-1">ยอดขายรวม</div>
-        <div class="text-xl font-bold text-primary-text">฿<span id="rep-income">0</span></div>
+        <div class="rep-kpi-amount" id="rep-kpi-income-amount">฿<span id="rep-income">0</span></div>
+        <!-- Sparkline -->
+        <div style="position:absolute;bottom:0;left:0;right:0;height:36px;overflow:hidden;border-radius:0 0 20px 20px;">
+          <canvas id="rep-spark-income" style="width:100%;height:36px;opacity:0.22;"></canvas>
+        </div>
       </div>
-      <div class="stat-card glass">
-        <div class="icon-box icon-orange mb-3">🛒</div>
+
+      <!-- Expense -->
+      <div class="stat-card glass rep-kpi-card" id="kpi-expense">
+        <div class="flex items-start justify-between mb-2">
+          <div class="icon-box icon-orange" style="width:40px;height:40px;font-size:18px;">🛒</div>
+          <div id="rep-expense-delta" class="rep-delta-badge"></div>
+        </div>
         <div class="text-xs text-secondary mb-1">รายจ่ายรวม</div>
-        <div class="text-xl font-bold text-primary-text">฿<span id="rep-expense">0</span></div>
+        <div class="rep-kpi-amount" id="rep-kpi-expense-amount">฿<span id="rep-expense">0</span></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:36px;overflow:hidden;border-radius:0 0 20px 20px;">
+          <canvas id="rep-spark-expense" style="width:100%;height:36px;opacity:0.22;"></canvas>
+        </div>
       </div>
-      <div class="stat-card glass">
-        <div class="icon-box icon-green mb-3">📈</div>
-        <div class="text-xs text-secondary mb-1">กำไรรวม</div>
-        <div class="text-xl font-bold" style="color:#10b981;">฿<span id="rep-profit">0</span></div>
+
+      <!-- Profit -->
+      <div class="stat-card glass rep-kpi-card" id="kpi-profit">
+        <div class="flex items-start justify-between mb-2">
+          <div class="icon-box icon-green" style="width:40px;height:40px;font-size:18px;">📈</div>
+          <div id="rep-profit-delta" class="rep-delta-badge"></div>
+        </div>
+        <div class="text-xs text-secondary mb-1">กำไรสุทธิ</div>
+        <div class="rep-kpi-amount" id="rep-profit-val">฿<span id="rep-profit">0</span></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:36px;overflow:hidden;border-radius:0 0 20px 20px;">
+          <canvas id="rep-spark-profit" style="width:100%;height:36px;opacity:0.22;"></canvas>
+        </div>
       </div>
-      <div class="stat-card glass">
-        <div class="icon-box icon-pink mb-3">%</div>
-        <div class="text-xs text-secondary mb-1">%กำไรรวม</div>
-        <div class="text-xl font-bold" style="color:#a855f7;"><span id="rep-pct">0</span>%</div>
+
+      <!-- Profit % -->
+      <div class="stat-card glass rep-kpi-card" id="kpi-pct" style="overflow:visible;">
+        <div class="flex items-start justify-between mb-2">
+          <div class="icon-box icon-pink" style="width:40px;height:40px;font-size:18px;font-weight:900;">%</div>
+          <div id="rep-pct-badge" class="rep-delta-badge"></div>
+        </div>
+        <div class="text-xs text-secondary mb-1">%กำไรสุทธิ</div>
+        <div class="rep-kpi-amount" style="color:#a855f7;"><span id="rep-pct">0</span>%</div>
+        <!-- Gauge bar -->
+        <div class="pct-bar mt-2">
+          <div id="rep-pct-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#a855f7,#ec4899);transition:width 0.8s cubic-bezier(.4,0,.2,1);"></div>
+        </div>
+        <div class="flex justify-between mt-1">
+          <span class="text-xs text-secondary">0%</span>
+          <span class="text-xs font-semibold" style="color:#a855f7;" id="rep-pct-gauge-label">0%</span>
+          <span class="text-xs text-secondary">100%</span>
+        </div>
+      </div>
+
+    </div><!-- /kpi grid -->
+
+    <!-- ══════════════════════════════════════════════
+         TREND CHART
+    ══════════════════════════════════════════════ -->
+    <div class="glass rounded-2xl p-4 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="font-bold text-sm text-primary-text">แนวโน้มรายรับ-รายจ่าย</h3>
+          <p class="text-xs text-secondary" id="rep-trend-subtitle">อัปเดตตามช่วงเวลาที่เลือก</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="rep-chart-btn active" data-ct="line" onclick="repToggleChart(this,'line')">📈 เส้น</button>
+          <button class="rep-chart-btn"        data-ct="bar"  onclick="repToggleChart(this,'bar')">📊 แท่ง</button>
+        </div>
+      </div>
+      <!-- Loading skeleton / chart -->
+      <div id="rep-trend-skeleton" class="skeleton" style="height:220px;display:none;border-radius:12px;"></div>
+      <div style="height:220px;position:relative;" id="rep-trend-wrap">
+        <canvas id="rep-trend-chart"></canvas>
       </div>
     </div>
 
-    <!-- Category breakdown -->
+    <!-- ══════════════════════════════════════════════
+         ROW: DONUT + DAILY AVG
+    ══════════════════════════════════════════════ -->
+    <div class="grid gap-3 mb-4" style="grid-template-columns:1fr 1fr;gap:12px;" id="rep-2col">
+
+      <!-- Donut -->
+      <div class="glass rounded-2xl p-4">
+        <h3 class="font-bold text-sm text-primary-text mb-3">สัดส่วนหมวดหมู่</h3>
+        <div style="position:relative;height:150px;">
+          <canvas id="rep-donut-chart"></canvas>
+          <div class="donut-center" style="pointer-events:none;flex-direction:column;gap:0;">
+            <div class="text-sm font-bold text-primary-text" id="rep-donut-center-val">-</div>
+            <div class="text-xs text-secondary">รายการ</div>
+          </div>
+        </div>
+        <!-- Legend -->
+        <div id="rep-donut-legend" class="mt-3 space-y-1"></div>
+      </div>
+
+      <!-- Daily avg -->
+      <div class="glass rounded-2xl p-4">
+        <h3 class="font-bold text-sm text-primary-text mb-3">ค่าเฉลี่ยต่อวัน</h3>
+        <div class="space-y-4 mt-1">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-xs text-secondary">💰 รายรับ/วัน</span>
+              <span class="text-xs font-bold" style="color:#10b981;">฿<span id="rep-avg-income">0</span></span>
+            </div>
+            <div class="pct-bar"><div id="rep-avg-income-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#10b981,#059669);transition:width 0.8s ease;"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-xs text-secondary">🛒 รายจ่าย/วัน</span>
+              <span class="text-xs font-bold" style="color:#ef4444;">฿<span id="rep-avg-expense">0</span></span>
+            </div>
+            <div class="pct-bar"><div id="rep-avg-expense-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#ef4444,#dc2626);transition:width 0.8s ease;"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-xs text-secondary">📈 กำไร/วัน</span>
+              <span class="text-xs font-bold" style="color:#a855f7;">฿<span id="rep-avg-profit">0</span></span>
+            </div>
+            <div class="pct-bar"><div id="rep-avg-profit-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#a855f7,#7c3aed);transition:width 0.8s ease;"></div></div>
+          </div>
+          <!-- Days in range info -->
+          <div class="rep-info-pill mt-2">
+            <span class="text-xs text-secondary">ช่วง <strong class="text-primary-text" id="rep-days-count">0</strong> วัน</span>
+            <span class="text-xs" style="color:#6366f1;">• <strong id="rep-tx-per-day">0</strong> รายการ/วัน</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         CATEGORY BREAKDOWN
+    ══════════════════════════════════════════════ -->
     <div class="glass rounded-2xl p-4 mb-4">
-      <h3 class="font-bold text-sm text-primary-text mb-4">สรุปตามหมวดหมู่</h3>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-sm text-primary-text">สรุปตามหมวดหมู่</h3>
+        <div class="flex gap-2">
+          <button class="rep-chip-sm active" data-cfilter="all"     onclick="repSetCatFilter(this,'all')">ทั้งหมด</button>
+          <button class="rep-chip-sm"        data-cfilter="income"  onclick="repSetCatFilter(this,'income')">รายรับ</button>
+          <button class="rep-chip-sm"        data-cfilter="expense" onclick="repSetCatFilter(this,'expense')">รายจ่าย</button>
+        </div>
+      </div>
       <div id="cat-breakdown"></div>
     </div>
 
-    <!-- Stats -->
+    <!-- ══════════════════════════════════════════════
+         TOP STATS
+    ══════════════════════════════════════════════ -->
     <div class="glass rounded-2xl p-4 mb-4">
-      <h3 class="font-bold text-sm text-primary-text mb-4">สถิติสูงสุด</h3>
+      <h3 class="font-bold text-sm text-primary-text mb-4">📊 สถิติในช่วงเวลานี้</h3>
       <div id="top-stats"></div>
     </div>
-  </div>
+
+    <!-- ══════════════════════════════════════════════
+         DAILY TABLE
+    ══════════════════════════════════════════════ -->
+    <div class="glass rounded-2xl overflow-hidden mb-4">
+      <div class="p-4 border-b flex items-center justify-between" style="border-color:rgba(255,255,255,0.06);">
+        <h3 class="font-bold text-sm text-primary-text">📋 รายละเอียดรายวัน</h3>
+        <span class="text-xs text-secondary font-semibold" id="rep-daily-range"></span>
+      </div>
+      <div style="overflow-x:auto;max-height:340px;overflow-y:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>วันที่</th>
+              <th>รายรับ</th>
+              <th>รายจ่าย</th>
+              <th>กำไร</th>
+              <th>รายการ</th>
+            </tr>
+          </thead>
+          <tbody id="rep-daily-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /page-reports -->
 
   <!-- ===== SETTINGS PAGE ===== -->
   <div id="page-settings" class="page">
@@ -1683,6 +2016,13 @@ function useLocalFallback() {
   const el = document.getElementById('setup-page');
   if (el) el.style.display = 'none';
   document.getElementById('login-page').style.display = 'flex';
+  // Seed demo data if nothing in localStorage yet
+  if (!localStorage.getItem('fm_transactions')) {
+    localStorage.setItem('fm_transactions', JSON.stringify(genDemoData()));
+  }
+  if (!localStorage.getItem('fm_categories')) {
+    localStorage.setItem('fm_categories', JSON.stringify(defaultCategories));
+  }
   showToast('ใช้งานแบบออฟไลน์ (localStorage)', 'info');
 }
 
@@ -1834,9 +2174,10 @@ function doLogout() {
   });
 }
 
-// Allow enter key on login
-document.getElementById('login-pass').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
+// Allow enter key on login (safe - check element exists)
+window.addEventListener('DOMContentLoaded', () => {
+  const lp = document.getElementById('login-pass');
+  if (lp) lp.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 });
 
 // ==================== THEME ====================
@@ -2627,86 +2968,613 @@ function deleteCat(id) {
   });
 }
 
-// ==================== REPORTS ====================
+// ==================== REPORTS ENGINE ====================
+let repState = {
+  range: 'today',        // quick-range key
+  startDate: '',         // used when range === 'custom'
+  endDate: '',
+  catFilter: 'all',      // 'all' | 'income' | 'expense'
+  chartType: 'line'      // 'line' | 'bar'
+};
+let repChartTrend = null;
+let repChartDonut = null;
+let repSparkIncome = null, repSparkExpense = null, repSparkProfit = null;
+
+// ── Date range helpers ──────────────────────────────
+function repGetDateRange(range) {
+  const today = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  today.setHours(23,59,59,999);
+  const todayStr = fmt(new Date());
+
+  if (range === 'today') {
+    return { start: todayStr, end: todayStr };
+  }
+  if (range === 'custom') {
+    return { start: repState.startDate, end: repState.endDate };
+  }
+  if (range === 'month') {
+    const d = new Date(); d.setDate(1);
+    return { start: fmt(d), end: todayStr };
+  }
+  if (range === 'lastmonth') {
+    const first = new Date(); first.setDate(1); first.setMonth(first.getMonth()-1);
+    const last  = new Date(); last.setDate(0);
+    return { start: fmt(first), end: fmt(last) };
+  }
+  if (range === 'year') {
+    const d = new Date(); d.setMonth(0); d.setDate(1);
+    return { start: fmt(d), end: todayStr };
+  }
+  // numeric days
+  const days = parseInt(range) || 7;
+  const s = new Date(); s.setDate(s.getDate() - (days - 1));
+  return { start: fmt(s), end: todayStr };
+}
+
+function repFilterTx(startDate, endDate) {
+  if (!startDate || !endDate) return [];
+  return transactions.filter(t => t.date >= startDate && t.date <= endDate);
+}
+
+// Build a list of date strings between start and end (inclusive)
+function repDateRange(start, end) {
+  const dates = [];
+  let cur = new Date(start);
+  const last = new Date(end);
+  while (cur <= last) {
+    dates.push(cur.toISOString().split('T')[0]);
+    cur.setDate(cur.getDate() + 1);
+  }
+  return dates;
+}
+
+// ── Quick-range chip ────────────────────────────────
+function repSetChip(el, range) {
+  document.querySelectorAll('.rep-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  repState.range = range;
+
+  const custom = document.getElementById('rep-custom-dates');
+  if (range === 'custom') {
+    custom.style.display = 'block';
+    // pre-fill with sensible defaults
+    const { start, end } = repGetDateRange('7');
+    if (!repState.startDate) {
+      document.getElementById('rep-start-date').value = start;
+      repState.startDate = start;
+    }
+    if (!repState.endDate) {
+      document.getElementById('rep-end-date').value = end;
+      repState.endDate = end;
+    }
+  } else {
+    custom.style.display = 'none';
+  }
+  renderReports();
+}
+
+function repApplyCustom() {
+  const s = document.getElementById('rep-start-date').value;
+  const e = document.getElementById('rep-end-date').value;
+  const errEl = document.getElementById('rep-date-error');
+  if (!s || !e) return;
+  if (s > e) {
+    if (errEl) errEl.style.display = 'block';
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  repState.startDate = s;
+  repState.endDate   = e;
+  renderReports();
+}
+
+function repToggleChart(el, type) {
+  document.querySelectorAll('.rep-chart-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  repState.chartType = type;
+  renderReports();
+}
+
+function repSetCatFilter(el, filter) {
+  document.querySelectorAll('.rep-chip-sm').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  repState.catFilter = filter;
+  renderCatBreakdown(repCurrentFiltered);
+}
+let repCurrentFiltered = [];
+
+// Fill custom date inputs with "last N days" shortcut
+function repFillShortcut(days) {
+  const today = new Date();
+  const start = new Date(); start.setDate(today.getDate() - (days - 1));
+  const fmt = d => d.toISOString().split('T')[0];
+  document.getElementById('rep-start-date').value = fmt(start);
+  document.getElementById('rep-end-date').value   = fmt(today);
+  repState.startDate = fmt(start);
+  repState.endDate   = fmt(today);
+  // Clear validation error
+  const err = document.getElementById('rep-date-error');
+  if (err) err.style.display = 'none';
+  renderReports();
+}
+
+// Export report as CSV (Excel)
+function exportExcelReport() {
+  const { start, end } = repGetDateRange(repState.range);
+  const filtered = repFilterTx(start, end);
+  if (!filtered.length) { showToast('ไม่มีข้อมูลในช่วงนี้', 'error'); return; }
+  const rows = [['วันที่','ประเภท','หมวดหมู่','จำนวน (บาท)','หมายเหตุ']];
+  filtered.forEach(t => rows.push([
+    t.date,
+    t.type === 'income' ? 'รายรับ' : 'รายจ่าย',
+    t.category, t.amount, t.note || ''
+  ]));
+  // Append summary
+  const income  = filtered.filter(t=>t.type==='income').reduce((a,b)=>a+b.amount,0);
+  const expense = filtered.filter(t=>t.type==='expense').reduce((a,b)=>a+b.amount,0);
+  rows.push([]);
+  rows.push(['สรุป','','','',``]);
+  rows.push(['ยอดขายรวม','','',income,'']);
+  rows.push(['รายจ่ายรวม','','',expense,'']);
+  rows.push(['กำไรสุทธิ','','',(income-expense),'']);
+  rows.push(['%กำไร','','',income>0?Math.round(((income-expense)/income)*100)+'%':'0%','']);
+
+  const csv = rows.map(r => r.map(v => '\"' + String(v).replace(/\"/g, '\"\"') + '\"').join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `report_${start}_to_${end}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('ส่งออกรายงาน Excel (CSV) สำเร็จ 📊', 'success');
+}
+
+// ── Main render ─────────────────────────────────────
 function renderReports() {
-  const income = transactions.filter(t=>t.type==='income').reduce((a,b)=>a+b.amount,0);
-  const expense = transactions.filter(t=>t.type==='expense').reduce((a,b)=>a+b.amount,0);
-  const profit = income - expense;
-  const pct = income > 0 ? Math.round((profit/income)*100) : 0;
+  const { start, end } = repGetDateRange(repState.range);
+  if (!start || !end) return;
 
-  document.getElementById('rep-income').textContent = income.toLocaleString();
-  document.getElementById('rep-expense').textContent = expense.toLocaleString();
-  document.getElementById('rep-profit').textContent = profit.toLocaleString();
-  document.getElementById('rep-pct').textContent = pct;
+  const filtered = repFilterTx(start, end);
+  repCurrentFiltered = filtered;
 
-  // Category breakdown
+  const income  = filtered.filter(t=>t.type==='income').reduce((a,b)=>a+b.amount,0);
+  const expense = filtered.filter(t=>t.type==='expense').reduce((a,b)=>a+b.amount,0);
+  const profit  = income - expense;
+  const pct     = income > 0 ? Math.round((profit/income)*100) : 0;
+
+  // date range string
+  const dates = repDateRange(start, end);
+  const days  = dates.length;
+
+  // ── KPI counters (animated) ──
+  repAnimateNum('rep-income',  income);
+  repAnimateNum('rep-expense', expense);
+  repAnimateNum('rep-profit',  profit);
+  repAnimateNum('rep-pct',     pct);
+
+  // profit color
+  const profEl = document.getElementById('rep-profit-val');
+  if (profEl) profEl.style.color = profit >= 0 ? '#10b981' : '#ef4444';
+
+  // pct bar
+  const pctBar = document.getElementById('rep-pct-bar');
+  if (pctBar) pctBar.style.width = Math.max(0, Math.min(100, pct)) + '%';
+
+  // tx count
+  document.getElementById('rep-tx-count').textContent = filtered.length;
+
+  // ── Range label ──
+  const labels = {
+    today:'วันนี้', '7':'7 วันล่าสุด', '15':'15 วันล่าสุด', '30':'30 วันล่าสุด',
+    month:'เดือนนี้', lastmonth:'เดือนก่อน', year:'ปีนี้',
+    custom:`${start} ถึง ${end}`
+  };
+  document.getElementById('rep-range-label').textContent = labels[repState.range] || `${start} – ${end}`;
+
+  // ── Delta vs previous equal period ──
+  const prevEnd   = new Date(start); prevEnd.setDate(prevEnd.getDate() - 1);
+  const prevStart = new Date(prevEnd); prevStart.setDate(prevStart.getDate() - days + 1);
+  const fmtD = d => d.toISOString().split('T')[0];
+  const prev = repFilterTx(fmtD(prevStart), fmtD(prevEnd));
+  const prevIncome  = prev.filter(t=>t.type==='income').reduce((a,b)=>a+b.amount,0);
+  const prevExpense = prev.filter(t=>t.type==='expense').reduce((a,b)=>a+b.amount,0);
+  const prevProfit  = prevIncome - prevExpense;
+
+  repSetDelta('rep-income-delta',  income,  prevIncome);
+  repSetDelta('rep-expense-delta', expense, prevExpense);
+  repSetDelta('rep-profit-delta',  profit,  prevProfit);
+
+  // ── Daily averages ──
+  const avgIncome  = days > 0 ? Math.round(income  / days) : 0;
+  const avgExpense = days > 0 ? Math.round(expense / days) : 0;
+  const avgProfit  = days > 0 ? Math.round(profit  / days) : 0;
+  const avgMax     = Math.max(avgIncome, avgExpense, 1);
+
+  repAnimateNum('rep-avg-income',  avgIncome);
+  repAnimateNum('rep-avg-expense', avgExpense);
+  repAnimateNum('rep-avg-profit',  avgProfit);
+  setTimeout(() => {
+    const bi = document.getElementById('rep-avg-income-bar');
+    const be = document.getElementById('rep-avg-expense-bar');
+    const bp = document.getElementById('rep-avg-profit-bar');
+    if (bi) bi.style.width = Math.round((avgIncome  / avgMax) * 100) + '%';
+    if (be) be.style.width = Math.round((avgExpense / avgMax) * 100) + '%';
+    if (bp) bp.style.width = Math.max(0, Math.round((avgProfit / avgMax) * 100)) + '%';
+  }, 50);
+
+  // ── Build per-day data for charts ──
+  const perDay = {};
+  dates.forEach(d => { perDay[d] = { income: 0, expense: 0 }; });
+  filtered.forEach(t => {
+    if (perDay[t.date]) {
+      perDay[t.date][t.type] += t.amount;
+    }
+  });
+  const chartLabels  = dates.map(d => { const p=d.split('-'); return `${p[2]}/${p[1]}`; });
+  const incomeData   = dates.map(d => perDay[d].income);
+  const expenseData  = dates.map(d => perDay[d].expense);
+  const profitData   = dates.map(d => perDay[d].income - perDay[d].expense);
+
+  // ── Trend chart ──
+  repRenderTrendChart(chartLabels, incomeData, expenseData);
+
+  // ── Sparklines in KPI cards ──
+  repRenderSparkline('rep-spark-income',  incomeData,  '#10b981');
+  repRenderSparkline('rep-spark-expense', expenseData, '#ef4444');
+  repRenderSparkline('rep-spark-profit',  profitData,  '#a855f7');
+
+  // ── Donut chart ──
+  repRenderDonut(filtered);
+
+  // ── Category breakdown ──
+  renderCatBreakdown(filtered);
+
+  // ── Top stats ──
+  renderTopStats(filtered, dates, perDay);
+
+  // ── Daily table ──
+  renderDailyTable(dates, perDay);
+
+  // ── Pct gauge label ──
+  const pctGauge = document.getElementById('rep-pct-gauge-label');
+  if (pctGauge) pctGauge.textContent = pct + '%';
+
+  // ── Days count + tx-per-day in avg card ──
+  const daysCountEl = document.getElementById('rep-days-count');
+  const txPerDayEl  = document.getElementById('rep-tx-per-day');
+  if (daysCountEl) daysCountEl.textContent = days;
+  if (txPerDayEl)  txPerDayEl.textContent  = days > 0 ? (filtered.length / days).toFixed(1) : 0;
+
+  // ── Trend chart subtitle ──
+  const subtitleEl = document.getElementById('rep-trend-subtitle');
+  if (subtitleEl) {
+    const rangeLabels = {
+      today:'ข้อมูลวันนี้', '7':'7 วันล่าสุด', '15':'15 วันล่าสุด',
+      '30':'30 วันล่าสุด', month:'เดือนนี้', lastmonth:'เดือนก่อน',
+      year:'ปีนี้', custom:`${start} ถึง ${end}`
+    };
+    subtitleEl.textContent = rangeLabels[repState.range] || `${start} – ${end}`;
+  }
+
+  // ── Date span label in summary bar ──
+  const spanEl = document.getElementById('rep-date-span-label');
+  if (spanEl) spanEl.textContent = start === end ? start : `${start} – ${end}`;
+
+  // daily range label
+  const dlabel = document.getElementById('rep-daily-range');
+  if (dlabel) dlabel.textContent = days <= 1 ? start : `${start} – ${end}`;
+
+  // ── Donut legend ──
+  repRenderDonutLegend(filtered);
+}
+
+// ── Animated counter ──
+function repAnimateNum(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const from = parseFloat(el.textContent.replace(/,/g,'')) || 0;
+  const dur = 600, t0 = performance.now();
+  const tick = now => {
+    const p = Math.min((now - t0) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (target - from) * ease).toLocaleString();
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// ── Delta indicator ──
+function repSetDelta(id, cur, prev) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (prev === 0 && cur === 0) { el.textContent = ''; return; }
+  if (prev === 0) { el.innerHTML = `<span class="delta-up">▲ ใหม่</span>`; return; }
+  const diff = cur - prev;
+  const pct  = Math.round((diff / prev) * 100);
+  if (diff > 0) el.innerHTML = `<span class="delta-up">▲ +${pct}% จากช่วงก่อน</span>`;
+  else if (diff < 0) el.innerHTML = `<span class="delta-down">▼ ${pct}% จากช่วงก่อน</span>`;
+  else el.innerHTML = `<span class="delta-flat">→ เท่าช่วงก่อน</span>`;
+}
+
+// ── Trend chart ──
+function repRenderTrendChart(labels, incomeData, expenseData) {
+  if (repChartTrend) { repChartTrend.destroy(); repChartTrend = null; }
+  const ctx = document.getElementById('rep-trend-chart');
+  if (!ctx) return;
+  const tc = isDark ? '#94a3b8' : '#64748b';
+  const gc = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(99,102,241,0.07)';
+  const type = repState.chartType;
+
+  // Thin the x-axis labels if too many
+  const maxLabels = 14;
+  const step = Math.ceil(labels.length / maxLabels);
+  const tickLabels = labels.map((l,i) => (i % step === 0) ? l : '');
+
+  repChartTrend = new Chart(ctx, {
+    type,
+    data: {
+      labels: tickLabels,
+      datasets: [
+        {
+          label: 'รายรับ', data: incomeData,
+          borderColor: '#10b981', backgroundColor: type==='line' ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.75)',
+          tension: 0.4, fill: type==='line', pointRadius: labels.length<=14 ? 4 : 2,
+          borderRadius: type==='bar' ? 6 : 0, borderWidth: 2
+        },
+        {
+          label: 'รายจ่าย', data: expenseData,
+          borderColor: '#ef4444', backgroundColor: type==='line' ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.75)',
+          tension: 0.4, fill: type==='line', pointRadius: labels.length<=14 ? 4 : 2,
+          borderRadius: type==='bar' ? 6 : 0, borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: tc, font: { family:'Sarabun', size:11 }, boxWidth:12 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ฿${ctx.parsed.y.toLocaleString()}`
+          },
+          backgroundColor: isDark ? 'rgba(26,16,64,0.95)' : 'rgba(255,255,255,0.95)',
+          titleColor: isDark ? '#e2e8f0' : '#1e1b4b',
+          bodyColor:  isDark ? '#94a3b8' : '#64748b',
+          borderColor: 'rgba(99,102,241,0.3)', borderWidth: 1,
+          cornerRadius: 12, padding: 12,
+          titleFont: { family:'Sarabun', size:12 },
+          bodyFont:  { family:'Sarabun', size:11 }
+        }
+      },
+      scales: {
+        x: { ticks: { color: tc, font:{ family:'Sarabun', size:9 }, maxRotation: 0 }, grid: { color: gc } },
+        y: { ticks: { color: tc, font:{ family:'Sarabun', size:10 }, callback: v => '฿'+v.toLocaleString() }, grid: { color: gc } }
+      }
+    }
+  });
+}
+
+// ── Sparkline ──
+function repRenderSparkline(id, data, color) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  // destroy existing
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map((_,i) => i),
+      datasets: [{ data, borderColor: color, backgroundColor: color+'33', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5 }]
+    },
+    options: {
+      responsive: false, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: { x: { display: false }, y: { display: false } }
+    }
+  });
+}
+
+// ── Donut chart ──
+function repRenderDonut(filtered) {
+  if (repChartDonut) { repChartDonut.destroy(); repChartDonut = null; }
+  const ctx = document.getElementById('rep-donut-chart');
+  if (!ctx) return;
+
   const catMap = {};
-  transactions.forEach(t => {
-    if (!catMap[t.category]) catMap[t.category] = { income: 0, expense: 0, count: 0, type: t.type };
-    if (t.type === 'income') catMap[t.category].income += t.amount;
+  filtered.forEach(t => { catMap[t.category] = (catMap[t.category]||0) + t.amount; });
+  const sorted = Object.entries(catMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  const palette = ['#6366f1','#ec4899','#10b981','#f59e0b','#a855f7','#ef4444','#3b82f6'];
+
+  repChartDonut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: sorted.map(x=>x[0]),
+      datasets: [{ data: sorted.map(x=>x[1]), backgroundColor: palette, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.label}: ฿${ctx.parsed.toLocaleString()}` },
+          backgroundColor: isDark ? 'rgba(26,16,64,0.95)' : 'rgba(255,255,255,0.95)',
+          bodyColor: isDark ? '#94a3b8' : '#475569',
+          bodyFont: { family:'Sarabun', size:11 },
+          cornerRadius: 10, padding: 10, borderColor:'rgba(99,102,241,0.3)', borderWidth:1
+        }
+      }
+    }
+  });
+
+  const center = document.getElementById('rep-donut-center-val');
+  if (center) center.textContent = filtered.length;
+}
+
+// ── Donut Legend ──
+function repRenderDonutLegend(filtered) {
+  const legend = document.getElementById('rep-donut-legend');
+  if (!legend) return;
+  const catMap = {};
+  filtered.forEach(t => { catMap[t.category] = (catMap[t.category]||0) + t.amount; });
+  const sorted  = Object.entries(catMap).sort((a,b)=>b[1]-a[1]).slice(0, 6);
+  const palette = ['#6366f1','#ec4899','#10b981','#f59e0b','#a855f7','#ef4444'];
+  const total   = sorted.reduce((a,b)=>a+b[1], 0);
+
+  if (!sorted.length) {
+    legend.innerHTML = '<div class="text-xs text-secondary text-center py-2">ไม่มีข้อมูล</div>';
+    return;
+  }
+  legend.innerHTML = sorted.map(([cat, amt], i) => `
+    <div class="donut-legend-item">
+      <div class="donut-legend-dot" style="background:${palette[i]};"></div>
+      <span class="donut-legend-label">${cat}</span>
+      <span class="donut-legend-val" style="color:${palette[i]};">฿${amt.toLocaleString()}</span>
+      <span style="font-size:10px;color:#6366f1;font-weight:600;flex-shrink:0;">${total>0?Math.round((amt/total)*100):0}%</span>
+    </div>
+  `).join('');
+}
+
+// ── Category Breakdown ──
+function renderCatBreakdown(filtered) {
+  const breakdown = document.getElementById('cat-breakdown');
+  if (!breakdown) return;
+
+  const txs = repState.catFilter === 'all' ? filtered
+    : filtered.filter(t => t.type === repState.catFilter);
+
+  const catMap = {};
+  txs.forEach(t => {
+    if (!catMap[t.category]) catMap[t.category] = { income:0, expense:0, count:0, type:t.type };
+    if (t.type==='income') catMap[t.category].income += t.amount;
     else catMap[t.category].expense += t.amount;
     catMap[t.category].count++;
   });
 
-  const totalAmt = income + expense;
-  const breakdown = document.getElementById('cat-breakdown');
-  breakdown.innerHTML = Object.entries(catMap).sort((a,b) => (b[1].income+b[1].expense)-(a[1].income+a[1].expense)).map(([cat, v]) => {
-    const total = v.income + v.expense;
+  const totalAmt = Object.values(catMap).reduce((a,v)=>a+(v.income+v.expense),0);
+  const sorted   = Object.entries(catMap).sort((a,b)=>(b[1].income+b[1].expense)-(a[1].income+a[1].expense));
+  const palette  = ['#6366f1','#ec4899','#10b981','#f59e0b','#a855f7','#ef4444','#3b82f6','#14b8a6'];
+
+  if (!sorted.length) {
+    breakdown.innerHTML = '<div class="text-center py-6 text-sm text-secondary">ไม่มีข้อมูลในช่วงนี้</div>';
+    return;
+  }
+
+  breakdown.innerHTML = sorted.map(([cat, v], i) => {
+    const total  = v.income + v.expense;
     const pctBar = totalAmt > 0 ? Math.round((total/totalAmt)*100) : 0;
+    const color  = palette[i % palette.length];
     return `
       <div class="mb-4">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
+            <div style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0;"></div>
             <span class="badge ${getCatClass(cat)} text-xs">${cat}</span>
             <span class="text-xs text-secondary">${v.count} รายการ</span>
           </div>
-          <span class="text-sm font-bold text-primary-text">฿${total.toLocaleString()}</span>
+          <div class="text-right">
+            <div class="text-sm font-bold text-primary-text">฿${total.toLocaleString()}</div>
+            <div class="text-xs text-secondary">${pctBar}%</div>
+          </div>
         </div>
         <div class="pct-bar">
-          <div class="pct-fill" style="width:${pctBar}%;background:linear-gradient(90deg,#6366f1,#a855f7);"></div>
+          <div class="cat-row-bar pct-fill" style="width:0%;background:${color};"
+            data-width="${pctBar}"></div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 
-  // Top stats
-  const topStats = document.getElementById('top-stats');
-  const sortedCats = Object.entries(catMap).sort((a,b) => (b[1].income+b[1].expense)-(a[1].income+a[1].expense));
-  topStats.innerHTML = `
-    <div class="space-y-3">
-      <div class="flex items-center justify-between py-2 border-b" style="border-color:rgba(255,255,255,0.06);">
-        <div class="text-sm text-secondary">🏆 หมวดหมู่ยอดนิยม</div>
-        <span class="badge badge-blue">${sortedCats[0]?.[0] || '-'}</span>
-      </div>
-      <div class="flex items-center justify-between py-2 border-b" style="border-color:rgba(255,255,255,0.06);">
-        <div class="text-sm text-secondary">💰 รายรับสูงสุด/วัน</div>
-        <span class="font-bold text-sm" style="color:#10b981;">฿${getMaxDayIncome().toLocaleString()}</span>
-      </div>
-      <div class="flex items-center justify-between py-2 border-b" style="border-color:rgba(255,255,255,0.06);">
-        <div class="text-sm text-secondary">📊 รายการทั้งหมด</div>
-        <span class="font-bold text-sm text-primary-text">${transactions.length} รายการ</span>
-      </div>
-      <div class="flex items-center justify-between py-2">
-        <div class="text-sm text-secondary">📅 วันที่มีรายรับสูงสุด</div>
-        <span class="text-sm font-bold text-primary-text">${getMaxIncomeDay()}</span>
-      </div>
-    </div>
-  `;
+  // Animate bars after DOM update
+  setTimeout(() => {
+    breakdown.querySelectorAll('.cat-row-bar').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+  }, 30);
 }
 
+// ── Top Stats ──
+function renderTopStats(filtered, dates, perDay) {
+  const topStats = document.getElementById('top-stats');
+  if (!topStats) return;
+
+  const catMap = {};
+  filtered.forEach(t => { catMap[t.category] = (catMap[t.category]||0) + t.amount; });
+  const sortedCats = Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+
+  // best day income
+  let bestDayIncome = 0, bestDayDate = '-';
+  dates.forEach(d => {
+    if (perDay[d] && perDay[d].income > bestDayIncome) {
+      bestDayIncome = perDay[d].income;
+      bestDayDate = d;
+    }
+  });
+
+  // avg daily tx count
+  const avgTx = dates.length > 0 ? (filtered.length / dates.length).toFixed(1) : 0;
+
+  topStats.innerHTML = `
+    <div class="space-y-0">
+      ${[
+        ['🏆 หมวดหมู่ยอดนิยม', `<span class="badge badge-blue">${sortedCats[0]?.[0]||'-'}</span>`],
+        ['💰 วันที่รายรับสูงสุด', `<span class="font-bold text-sm text-primary-text">${bestDayDate}</span>`],
+        ['📈 รายรับสูงสุด/วัน', `<span class="font-bold text-sm" style="color:#10b981;">฿${bestDayIncome.toLocaleString()}</span>`],
+        ['📊 รายการทั้งหมด', `<span class="font-bold text-sm text-primary-text">${filtered.length} รายการ</span>`],
+        ['📅 เฉลี่ยรายการ/วัน', `<span class="font-bold text-sm text-primary-text">${avgTx} รายการ</span>`],
+        ['🛒 ค่าใช้จ่ายมากสุด', `<span class="badge badge-red">${sortedCats.filter(([k])=>categories.find(c=>c.name===k&&c.type==='expense'))[0]?.[0]||'-'}</span>`]
+      ].map(([label, value]) => `
+        <div class="flex items-center justify-between py-3 border-b" style="border-color:rgba(255,255,255,0.06);">
+          <div class="text-sm text-secondary">${label}</div>
+          ${value}
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+// ── Daily summary table ──
+function renderDailyTable(dates, perDay) {
+  const tbody = document.getElementById('rep-daily-tbody');
+  if (!tbody) return;
+  if (!dates.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-4">ไม่มีข้อมูล</td></tr>'; return; }
+
+  // show latest first
+  const rows = [...dates].reverse().map(d => {
+    const { income, expense } = perDay[d] || { income:0, expense:0 };
+    const profit = income - expense;
+    const hasData = income > 0 || expense > 0;
+    return `
+      <tr style="${!hasData?'opacity:0.4':''}">
+        <td class="text-xs text-secondary">${d}</td>
+        <td class="font-semibold text-xs" style="color:#10b981;">
+          ${income > 0 ? '฿'+income.toLocaleString() : '-'}
+        </td>
+        <td class="font-semibold text-xs" style="color:#ef4444;">
+          ${expense > 0 ? '฿'+expense.toLocaleString() : '-'}
+        </td>
+        <td class="font-bold text-xs" style="color:${profit>=0?'#10b981':'#ef4444'};">
+          ${income>0||expense>0 ? (profit>=0?'+':'')+' ฿'+profit.toLocaleString() : '-'}
+        </td>
+        <td class="text-xs text-secondary text-center">
+          ${transactions.filter(t=>t.date===d).length || '-'}
+        </td>
+      </tr>`;
+  }).join('');
+
+  tbody.innerHTML = rows;
+}
+
+// ── getMaxDayIncome / getMaxIncomeDay (keep for backward compat) ──
 function getMaxDayIncome() {
   const dayMap = {};
-  transactions.filter(t=>t.type==='income').forEach(t => {
-    dayMap[t.date] = (dayMap[t.date]||0) + t.amount;
-  });
+  transactions.filter(t=>t.type==='income').forEach(t => { dayMap[t.date]=(dayMap[t.date]||0)+t.amount; });
   return Math.max(...Object.values(dayMap), 0);
 }
-
 function getMaxIncomeDay() {
   const dayMap = {};
-  transactions.filter(t=>t.type==='income').forEach(t => {
-    dayMap[t.date] = (dayMap[t.date]||0) + t.amount;
-  });
+  transactions.filter(t=>t.type==='income').forEach(t => { dayMap[t.date]=(dayMap[t.date]||0)+t.amount; });
   if (!Object.keys(dayMap).length) return '-';
   return Object.entries(dayMap).sort((a,b)=>b[1]-a[1])[0][0];
 }
@@ -2818,28 +3686,35 @@ document.addEventListener('click', function(e) {
 // ==================== INIT ====================
 async function initApp() {
   document.getElementById('app').style.display = 'block';
-  showPageLoader('กำลังเชื่อมต่อฐานข้อมูล...');
 
-  try {
-    showPageLoader('กำลังโหลดหมวดหมู่...');
-    categories = await loadCategoriesData();
-
-    showPageLoader('กำลังโหลดรายการ...');
-    transactions = await loadTransactions();
-
-    // Update DB status badge in settings
-    updateDbStatusBadge();
-
-  } catch (err) {
-    showToast(`โหลดข้อมูลไม่สำเร็จ: ${err.message}`, 'error');
-    // Fallback to empty
-    transactions = [];
-    categories = defaultCategories;
-  } finally {
-    hidePageLoader();
+  if (isSupabaseReady()) {
+    // ── Supabase path ──
+    showPageLoader('กำลังเชื่อมต่อ Supabase...');
+    try {
+      showPageLoader('กำลังโหลดหมวดหมู่...');
+      categories = await loadCategoriesData();
+      showPageLoader('กำลังโหลดรายการ...');
+      transactions = await loadTransactions();
+    } catch (err) {
+      showToast('⚠️ โหลดจาก Supabase ไม่สำเร็จ — ใช้ข้อมูล local แทน', 'error');
+      const rawTx  = localStorage.getItem('fm_transactions');
+      const rawCat = localStorage.getItem('fm_categories');
+      transactions = rawTx  ? JSON.parse(rawTx)  : genDemoData();
+      categories   = rawCat ? JSON.parse(rawCat) : defaultCategories;
+    } finally {
+      hidePageLoader();
+    }
+  } else {
+    // ── Local / offline path — no async needed, never fails ──
+    const rawTx  = localStorage.getItem('fm_transactions');
+    const rawCat = localStorage.getItem('fm_categories');
+    transactions = rawTx  ? JSON.parse(rawTx)  : genDemoData();
+    categories   = rawCat ? JSON.parse(rawCat) : defaultCategories;
   }
 
+  updateDbStatusBadge();
   navTo('dashboard');
+
   if (window.innerWidth >= 768) {
     document.getElementById('navbar').style.left = '260px';
     document.getElementById('navbar').style.width = 'calc(100% - 260px)';
@@ -2861,14 +3736,12 @@ function updateDbStatusBadge() {
   }
 }
 
-// Boot sequence: check if Supabase configured → show setup if not, else show login
-(function boot() {
+// Boot: show setup overlay on first visit (after DOM ready)
+window.addEventListener('DOMContentLoaded', () => {
   if (!SUPA_URL || !SUPA_KEY) {
-    // Show setup page first time
     showSetupPage();
   }
-  // Login page is already visible by default; setup page layered on top if needed
-})();
+});
 
 // Handle resize
 window.addEventListener('resize', () => {
