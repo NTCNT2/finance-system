@@ -557,6 +557,12 @@
   .chart-container { position: relative; }
   canvas { border-radius: 12px; }
 
+  /* Chart.js canvas must never be clipped */
+  .chart-container {
+    position: relative;
+    overflow: visible !important;
+  }
+
   /* Notification panel */
   #notif-panel {
     position: absolute; top: 56px; right: 0;
@@ -1096,7 +1102,8 @@
     <div class="grid gap-3" style="grid-template-columns:1fr 1fr;gap:12px;" id="chart-grid-2">
       <div class="glass rounded-2xl p-4">
         <h3 class="font-bold text-sm text-primary-text mb-3">รายรับ-รายจ่าย (Bar)</h3>
-        <div class="chart-container" style="height:160px;">
+        <!-- overflow:visible ป้องกัน Y-axis ถูก clip -->
+        <div class="chart-container" style="height:160px;overflow:visible;">
           <canvas id="barChart"></canvas>
         </div>
       </div>
@@ -1393,55 +1400,79 @@
     <!-- ══════════════════════════════════════════════
          ROW: DONUT + DAILY AVG
     ══════════════════════════════════════════════ -->
-    <div class="grid gap-3 mb-4" style="grid-template-columns:1fr 1fr;gap:12px;" id="rep-2col">
+    <!-- ══ สัดส่วนหมวดหมู่ — full width ══ -->
+    <div class="glass rounded-2xl p-5 mb-4">
+      <h3 class="font-bold text-sm text-primary-text mb-4">🍩 สัดส่วนหมวดหมู่</h3>
 
-      <!-- Donut -->
-      <div class="glass rounded-2xl p-4">
-        <h3 class="font-bold text-sm text-primary-text mb-3">สัดส่วนหมวดหมู่</h3>
-        <div style="position:relative;height:150px;">
-          <canvas id="rep-donut-chart"></canvas>
-          <div class="donut-center" style="pointer-events:none;flex-direction:column;gap:0;">
-            <div class="text-sm font-bold text-primary-text" id="rep-donut-center-val">-</div>
-            <div class="text-xs text-secondary">รายการ</div>
-          </div>
-        </div>
-        <!-- Legend -->
-        <div id="rep-donut-legend" class="mt-3 space-y-1"></div>
-      </div>
-
-      <!-- Daily avg -->
-      <div class="glass rounded-2xl p-4">
-        <h3 class="font-bold text-sm text-primary-text mb-3">ค่าเฉลี่ยต่อวัน</h3>
-        <div class="space-y-4 mt-1">
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-xs text-secondary">💰 รายรับ/วัน</span>
-              <span class="text-xs font-bold" style="color:#10b981;">฿<span id="rep-avg-income">0</span></span>
-            </div>
-            <div class="pct-bar"><div id="rep-avg-income-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#10b981,#059669);transition:width 0.8s ease;"></div></div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-xs text-secondary">🛒 รายจ่าย/วัน</span>
-              <span class="text-xs font-bold" style="color:#ef4444;">฿<span id="rep-avg-expense">0</span></span>
-            </div>
-            <div class="pct-bar"><div id="rep-avg-expense-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#ef4444,#dc2626);transition:width 0.8s ease;"></div></div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-xs text-secondary">📈 กำไร/วัน</span>
-              <span class="text-xs font-bold" style="color:#a855f7;">฿<span id="rep-avg-profit">0</span></span>
-            </div>
-            <div class="pct-bar"><div id="rep-avg-profit-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#a855f7,#7c3aed);transition:width 0.8s ease;"></div></div>
-          </div>
-          <!-- Days in range info -->
-          <div class="rep-info-pill mt-2">
-            <span class="text-xs text-secondary">ช่วง <strong class="text-primary-text" id="rep-days-count">0</strong> วัน</span>
-            <span class="text-xs" style="color:#6366f1;">• <strong id="rep-tx-per-day">0</strong> รายการ/วัน</span>
-          </div>
+      <!-- Donut chart centered -->
+      <div style="position:relative;height:190px;max-width:230px;margin:0 auto;">
+        <canvas id="rep-donut-chart"></canvas>
+        <div class="donut-center" style="pointer-events:none;flex-direction:column;gap:2px;">
+          <div class="text-lg font-bold text-primary-text" id="rep-donut-center-val">-</div>
+          <div class="text-xs text-secondary">รายการ</div>
         </div>
       </div>
 
+      <!-- Legend full-width below -->
+      <div id="rep-donut-legend" class="mt-4 space-y-2"></div>
+    </div>
+
+    <!-- ══ ค่าเฉลี่ยต่อวัน — full width, 2x2 grid ══ -->
+    <div class="glass rounded-2xl p-5 mb-4">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-sm text-primary-text">📅 ค่าเฉลี่ยต่อวัน</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="badge badge-blue text-xs">ช่วง <strong id="rep-days-count">0</strong> วัน</span>
+          <span class="badge badge-purple text-xs"><strong id="rep-tx-per-day">0</strong> รายการ/วัน</span>
+        </div>
+      </div>
+
+      <!-- 2x2 grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+        <!-- รายรับ/วัน -->
+        <div style="border-radius:16px;padding:14px;background:rgba(16,185,129,0.08);border:1.5px solid rgba(16,185,129,0.2);">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="icon-box icon-green" style="width:30px;height:30px;font-size:13px;flex-shrink:0;">💰</div>
+            <span class="text-xs text-secondary font-semibold">รายรับ/วัน</span>
+          </div>
+          <div style="font-size:1.05rem;font-weight:800;color:#10b981;font-family:'Kanit',sans-serif;">฿<span id="rep-avg-income">0</span></div>
+          <div class="pct-bar mt-2"><div id="rep-avg-income-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#10b981,#059669);transition:width 0.8s ease;"></div></div>
+        </div>
+
+        <!-- รายจ่าย/วัน -->
+        <div style="border-radius:16px;padding:14px;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.2);">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="icon-box icon-orange" style="width:30px;height:30px;font-size:13px;flex-shrink:0;">🛒</div>
+            <span class="text-xs text-secondary font-semibold">รายจ่าย/วัน</span>
+          </div>
+          <div style="font-size:1.05rem;font-weight:800;color:#ef4444;font-family:'Kanit',sans-serif;">฿<span id="rep-avg-expense">0</span></div>
+          <div class="pct-bar mt-2"><div id="rep-avg-expense-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#ef4444,#dc2626);transition:width 0.8s ease;"></div></div>
+        </div>
+
+        <!-- กำไร/วัน -->
+        <div style="border-radius:16px;padding:14px;background:rgba(168,85,247,0.08);border:1.5px solid rgba(168,85,247,0.2);">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="icon-box icon-purple" style="width:30px;height:30px;font-size:13px;flex-shrink:0;">📈</div>
+            <span class="text-xs text-secondary font-semibold">กำไร/วัน</span>
+          </div>
+          <div style="font-size:1.05rem;font-weight:800;color:#a855f7;font-family:'Kanit',sans-serif;">฿<span id="rep-avg-profit">0</span></div>
+          <div class="pct-bar mt-2"><div id="rep-avg-profit-bar" class="pct-fill" style="width:0%;background:linear-gradient(90deg,#a855f7,#7c3aed);transition:width 0.8s ease;"></div></div>
+        </div>
+
+        <!-- รายการรวม -->
+        <div style="border-radius:16px;padding:14px;background:rgba(99,102,241,0.08);border:1.5px solid rgba(99,102,241,0.2);">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="icon-box icon-blue" style="width:30px;height:30px;font-size:13px;flex-shrink:0;">🗂️</div>
+            <span class="text-xs text-secondary font-semibold">รายการรวม</span>
+          </div>
+          <div style="font-size:1.05rem;font-weight:800;color:#818cf8;font-family:'Kanit',sans-serif;" id="rep-avg-count">0</div>
+          <div class="text-xs text-secondary mt-1">รายการทั้งหมด</div>
+        </div>
+
+      </div>
     </div>
 
     <!-- ══════════════════════════════════════════════
@@ -2579,6 +2610,60 @@ function animateCounter(id, target) {
   requestAnimationFrame(update);
 }
 
+
+// ── Y-Axis formatter: always short, no ฿ prefix to save space ──
+// Format: 0 / 1K / 10K / 100K / 1M  (no ฿ — added via title or tooltip)
+function yFmt(v) {
+  if (v === 0) return '0';
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return (v / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (abs >= 1_000)     return (v / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(v);
+}
+
+// Compute worst-case label width in px given current data max
+function yAxisWidth(maxVal) {
+  // Longest possible label at each scale
+  if (maxVal >= 1_000_000) return 42; // "999.9M"
+  if (maxVal >= 100_000)   return 36; // "999K"
+  if (maxVal >= 10_000)    return 32; // "99.9K"
+  if (maxVal >= 1_000)     return 28; // "9.9K"
+  return 24;                          // "999"
+}
+
+// ── Y-axis scale config — uses minSize to guarantee space ──
+function yScaleCfg(tc, gc, maxVal) {
+  const w = yAxisWidth(maxVal !== undefined ? maxVal : 100_000);
+  return {
+    beginAtZero: true,
+    ticks: {
+      color: tc,
+      font: { family: 'Sarabun', size: 10 },
+      callback: yFmt,
+      maxTicksLimit: 5,
+      padding: 6
+    },
+    grid: { color: gc },
+    // minSize forces Chart.js to allocate at least w px for the Y axis column
+    afterFit(scale) { scale.width = Math.max(scale.width, w); }
+  };
+}
+
+// ── X-axis scale config ──
+function xScaleCfg(tc, gc, rotate) {
+  return {
+    ticks: {
+      color: tc,
+      font: { family: 'Sarabun', size: 9 },
+      maxRotation: rotate ? 45 : 0,
+      autoSkip: true,
+      maxTicksLimit: 10,
+      padding: 2
+    },
+    grid: { color: gc }
+  };
+}
+
 function renderCharts(filtered) {
   // Build daily data for last N days
   const days = currentDateFilter === 'today' ? 1 : parseInt(currentDateFilter) || 1;
@@ -2598,12 +2683,28 @@ function renderCharts(filtered) {
   const textColor = isDark ? '#94a3b8' : '#64748b';
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(99,102,241,0.08)';
 
+  const allVals = [...incomes, ...expenses];
+  const maxVal  = allVals.length ? Math.max(...allVals) : 1000;
+
   const commonOpts = {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: textColor, font: { family: 'Sarabun', size: 11 } } } },
+    layout: { padding: { left: 0, right: 6, top: 6, bottom: 0 } },
+    plugins: {
+      legend: { labels: { color: textColor, font: { family: 'Sarabun', size: 11 } } },
+      tooltip: {
+        callbacks: { label: c => ` ${c.dataset.label}: ฿${c.parsed.y.toLocaleString()}` },
+        backgroundColor: isDark ? 'rgba(26,16,64,0.95)' : 'rgba(255,255,255,0.95)',
+        titleColor: isDark ? '#e2e8f0' : '#1e1b4b',
+        bodyColor:  isDark ? '#94a3b8' : '#64748b',
+        borderColor: 'rgba(99,102,241,0.3)', borderWidth: 1,
+        cornerRadius: 12, padding: 10,
+        titleFont: { family:'Sarabun', size:12 },
+        bodyFont:  { family:'Sarabun', size:11 }
+      }
+    },
     scales: {
-      x: { ticks: { color: textColor, font: { family: 'Sarabun', size: 10 } }, grid: { color: gridColor } },
-      y: { ticks: { color: textColor, font: { family: 'Sarabun', size: 10 }, callback: v => '฿'+v.toLocaleString() }, grid: { color: gridColor } }
+      x: xScaleCfg(textColor, gridColor, false),
+      y: yScaleCfg(textColor, gridColor, maxVal)
     }
   };
 
@@ -3195,6 +3296,10 @@ function renderReports() {
   repAnimateNum('rep-avg-income',  avgIncome);
   repAnimateNum('rep-avg-expense', avgExpense);
   repAnimateNum('rep-avg-profit',  avgProfit);
+
+  // รายการรวม card (new)
+  const avgCountEl = document.getElementById('rep-avg-count');
+  if (avgCountEl) avgCountEl.textContent = filtered.length.toLocaleString();
   setTimeout(() => {
     const bi = document.getElementById('rep-avg-income-bar');
     const be = document.getElementById('rep-avg-expense-bar');
@@ -3349,9 +3454,14 @@ function repRenderTrendChart(labels, incomeData, expenseData) {
           bodyFont:  { family:'Sarabun', size:11 }
         }
       },
+      layout: { padding: { left: 0, right: 6, top: 6, bottom: 0 } },
       scales: {
-        x: { ticks: { color: tc, font:{ family:'Sarabun', size:9 }, maxRotation: 0 }, grid: { color: gc } },
-        y: { ticks: { color: tc, font:{ family:'Sarabun', size:10 }, callback: v => '฿'+v.toLocaleString() }, grid: { color: gc } }
+        x: xScaleCfg(tc, gc, labels.length > 20),
+        y: (function() {
+          const allVals = [...incomeData, ...expenseData];
+          const mv = allVals.length ? Math.max(...allVals) : 1000;
+          return yScaleCfg(tc, gc, mv);
+        })()
       }
     }
   });
