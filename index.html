@@ -956,6 +956,10 @@
         <div class="icon-box icon-orange w-9 h-9" style="width:36px;height:36px;font-size:16px;">📈</div>
         <span>รายงาน</span>
       </div>
+      <div class="sidebar-menu-item" data-page="shopping" onclick="navTo('shopping')">
+        <div class="icon-box icon-blue w-9 h-9" style="width:36px;height:36px;font-size:16px;background:linear-gradient(135deg,#06b6d4,#3b82f6);">🛍️</div>
+        <span>บันทึกซื้อสินค้า</span>
+      </div>
       <div class="sidebar-menu-item" data-page="settings" onclick="navTo('settings')">
         <div class="icon-box icon-pink w-9 h-9" style="width:36px;height:36px;font-size:16px;">⚙️</div>
         <span>ตั้งค่า</span>
@@ -1605,6 +1609,75 @@
     </button>
   </div>
 
+  <!-- ===== SHOPPING PAGE ===== -->
+  <div id="page-shopping" class="page">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-primary-text">🛍️ บันทึกซื้อสินค้า</h2>
+      <button class="btn-gradient ripple text-sm px-4 py-2" onclick="openShopModal()">+ เพิ่มรายการ</button>
+    </div>
+
+    <!-- Summary bar -->
+    <div class="glass rounded-2xl p-4 mb-4">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;">
+        <div>
+          <div class="text-xs text-secondary mb-1">รายการทั้งหมด</div>
+          <div class="text-lg font-bold text-primary-text" id="shop-stat-total">0</div>
+        </div>
+        <div style="border-left:1px solid rgba(99,102,241,0.2);border-right:1px solid rgba(99,102,241,0.2);">
+          <div class="text-xs text-secondary mb-1">ต้องซื้อ</div>
+          <div class="text-lg font-bold" style="color:#10b981;" id="shop-stat-bought">0</div>
+        </div>
+        <div>
+          <div class="text-xs text-secondary mb-1">ยังไม่ซื้อ</div>
+          <div class="text-lg font-bold" style="color:#ef4444;" id="shop-stat-pending">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search + Filter -->
+    <div class="glass rounded-2xl p-4 mb-4">
+      <div class="search-wrap mb-3">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" class="form-input" placeholder="ค้นหาสินค้า..." id="shop-search" oninput="renderShopping()"/>
+      </div>
+      <div class="filter-tabs">
+        <div class="filter-tab active" data-shopfilter="all"    onclick="setShopFilter(this,'all')">ทั้งหมด</div>
+        <div class="filter-tab"        data-shopfilter="bought" onclick="setShopFilter(this,'bought')">ต้องซื้อ</div>
+        <div class="filter-tab"        data-shopfilter="pending" onclick="setShopFilter(this,'pending')">ยังไม่ซื้อ</div>
+      </div>
+    </div>
+
+    <!-- Desktop table -->
+    <div class="glass rounded-2xl overflow-hidden hidden md:block">
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>วันที่</th>
+              <th>สินค้า/รายละเอียด</th>
+              <th>หมวดหมู่</th>
+              <th>ราคา/หน่วย</th>
+              <th>จำนวน</th>
+              <th>รวม</th>
+              <th>สถานะ</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="shop-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="md:hidden" id="shop-card-list"></div>
+
+    <div id="shop-empty" class="empty-state" style="display:none;">
+      <div class="empty-icon">🛒</div>
+      <div class="font-bold text-primary-text mb-2">ไม่พบรายการ</div>
+      <div class="text-sm text-secondary">กดปุ่ม + เพื่อเพิ่มรายการซื้อสินค้า</div>
+    </div>
+  </div>
+
 </div><!-- /main-content -->
 
 <!-- ===== BOTTOM NAV (Mobile) ===== -->
@@ -1617,18 +1690,41 @@
     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
     <span>รายการ</span>
   </div>
-  <div class="fab" onclick="openAddModal()">
+  <div class="fab" onclick="openFabMenu(event)">
     <svg width="24" height="24" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
   </div>
-  <div class="bottom-nav-item" data-page="reports" onclick="navTo('reports')">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-    <span>รายงาน</span>
+  <div class="bottom-nav-item" data-page="shopping" onclick="navTo('shopping')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span>ซื้อสินค้า</span>
   </div>
   <div class="bottom-nav-item" data-page="settings" onclick="navTo('settings')">
     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
     <span>ตั้งค่า</span>
   </div>
 </nav>
+
+<!-- FAB mini menu -->
+<div id="fab-menu" style="
+  position:fixed;bottom:84px;left:50%;transform:translateX(-50%);
+  display:none;flex-direction:column;gap:8px;z-index:150;
+  animation:slideUp 0.25s ease;
+">
+  <button onclick="closeFabMenu();openAddModal();" style="
+    display:flex;align-items:center;gap:10px;padding:10px 18px;
+    border-radius:16px;border:none;cursor:pointer;font-family:'Sarabun',sans-serif;
+    font-size:14px;font-weight:700;white-space:nowrap;
+    background:linear-gradient(135deg,#10b981,#059669);color:white;
+    box-shadow:0 4px 15px rgba(16,185,129,0.4);
+  ">💰 เพิ่มรายการบัญชี</button>
+  <button onclick="closeFabMenu();openShopModal();" style="
+    display:flex;align-items:center;gap:10px;padding:10px 18px;
+    border-radius:16px;border:none;cursor:pointer;font-family:'Sarabun',sans-serif;
+    font-size:14px;font-weight:700;white-space:nowrap;
+    background:linear-gradient(135deg,#06b6d4,#3b82f6);color:white;
+    box-shadow:0 4px 15px rgba(6,182,212,0.4);
+  ">🛍️ บันทึกซื้อสินค้า</button>
+</div>
+<div id="fab-overlay" onclick="closeFabMenu()" style="position:fixed;inset:0;z-index:149;display:none;"></div>
 
 </div><!-- /app -->
 
@@ -1697,6 +1793,81 @@
     <div class="flex gap-3">
       <button class="flex-1 py-3 rounded-xl font-semibold text-sm text-secondary hover:bg-white/5 transition-all border" style="border-color:rgba(255,255,255,0.1);" onclick="closeCatModal()">ยกเลิก</button>
       <button class="btn-gradient ripple flex-1 py-3 text-sm" onclick="saveCat()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shopping Modal -->
+<div class="modal-overlay" id="shop-modal">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-base font-bold text-primary-text" id="shop-modal-title">เพิ่มรายการซื้อสินค้า</h3>
+      <button onclick="closeShopModal()" class="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-white/10 text-secondary">✕</button>
+    </div>
+    <input type="hidden" id="shop-edit-id"/>
+
+    <!-- Status -->
+    <div class="form-group">
+      <label class="form-label">สถานะ *</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <label style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;cursor:pointer;border:2px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.08);transition:all 0.2s;" id="shop-status-bought-lbl">
+          <input type="radio" name="shop-status" value="bought" id="shop-status-bought" onchange="updateShopStatusUI()" style="accent-color:#10b981;"/>
+          <span style="color:#10b981;font-weight:700;font-size:14px;">✅ ต้องซื้อ</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;cursor:pointer;border:2px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);transition:all 0.2s;" id="shop-status-pending-lbl">
+          <input type="radio" name="shop-status" value="pending" id="shop-status-pending" onchange="updateShopStatusUI()" style="accent-color:#ef4444;" checked/>
+          <span style="color:#ef4444;font-weight:700;font-size:14px;">🕐 ยังไม่ซื้อ</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <label class="form-label">หมวดหมู่ (รายจ่าย) *</label>
+      <select class="form-input" id="shop-category"></select>
+    </div>
+
+    <!-- Detail -->
+    <div class="form-group">
+      <label class="form-label">รายละเอียดสินค้า *</label>
+      <input type="text" class="form-input" id="shop-detail" placeholder="ชื่อสินค้า / รายละเอียด"/>
+    </div>
+
+    <!-- Price + Qty row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">ราคา/หน่วย (฿) *</label>
+        <input type="number" class="form-input" id="shop-price" placeholder="0.00" min="0" step="0.01"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">จำนวน *</label>
+        <input type="number" class="form-input" id="shop-qty" placeholder="1" min="1" step="1" value="1"/>
+      </div>
+    </div>
+
+    <!-- Total preview -->
+    <div style="padding:10px 14px;border-radius:12px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);margin-bottom:20px;">
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-secondary">รวมทั้งสิ้น</span>
+        <span class="text-base font-bold" style="color:#818cf8;" id="shop-total-preview">฿0.00</span>
+      </div>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+      <label class="form-label">วันที่</label>
+      <input type="date" class="form-input" id="shop-date"/>
+    </div>
+
+    <!-- Note -->
+    <div class="form-group">
+      <label class="form-label">หมายเหตุ</label>
+      <input type="text" class="form-input" id="shop-note" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"/>
+    </div>
+
+    <div class="flex gap-3">
+      <button class="flex-1 py-3 rounded-xl font-semibold text-sm text-secondary hover:bg-white/5 transition-all border" style="border-color:rgba(255,255,255,0.1);" onclick="closeShopModal()">ยกเลิก</button>
+      <button class="btn-gradient ripple flex-1 py-3 text-sm" onclick="saveShop()">💾 บันทึก</button>
     </div>
   </div>
 </div>
@@ -2245,7 +2416,7 @@ function navTo(page) {
   });
 
   // Page titles
-  const titles = { dashboard: 'หน้าแรก', transactions: 'รายการ', manage: 'จัดการหมวดหมู่', reports: 'รายงาน', settings: 'ตั้งค่า' };
+  const titles = { dashboard: 'หน้าแรก', transactions: 'รายการ', manage: 'จัดการหมวดหมู่', reports: 'รายงาน', settings: 'ตั้งค่า', shopping: 'บันทึกซื้อสินค้า' };
   document.getElementById('page-title').textContent = titles[page] || '';
 
   // Render content
@@ -2253,6 +2424,7 @@ function navTo(page) {
   else if (page === 'transactions') renderTransactions();
   else if (page === 'manage') renderCategories();
   else if (page === 'reports') renderReports();
+  else if (page === 'shopping') renderShopping();
 
   // Close panels
   document.getElementById('notif-panel').classList.remove('show');
@@ -2298,6 +2470,296 @@ function closeSidebar() {
 }
 
 // ==================== NOTIFICATION / PROFILE PANELS ====================
+// ==================== SHOPPING LIST ====================
+let shoppingItems = [];
+let shopFilter = 'all';
+let editShopId = null;
+
+const SHOP_STORAGE = 'fm_shopping';
+
+function loadShoppingData() {
+  const raw = localStorage.getItem(SHOP_STORAGE);
+  return raw ? JSON.parse(raw) : [];
+}
+function saveShoppingData() {
+  localStorage.setItem(SHOP_STORAGE, JSON.stringify(shoppingItems));
+}
+
+// ── FAB menu ──
+function openFabMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('fab-menu');
+  const ov   = document.getElementById('fab-overlay');
+  const isOpen = menu.style.display === 'flex';
+  menu.style.display = isOpen ? 'none' : 'flex';
+  ov.style.display   = isOpen ? 'none' : 'block';
+}
+function closeFabMenu() {
+  document.getElementById('fab-menu').style.display = 'none';
+  document.getElementById('fab-overlay').style.display = 'none';
+}
+
+// ── Render ──
+function renderShopping() {
+  shoppingItems = loadShoppingData();
+  const search  = (document.getElementById('shop-search')?.value || '').toLowerCase();
+
+  let items = [...shoppingItems].sort((a,b) => new Date(b.date) - new Date(a.date));
+  if (search) items = items.filter(i =>
+    i.detail.toLowerCase().includes(search) ||
+    i.category.toLowerCase().includes(search) ||
+    (i.note||'').toLowerCase().includes(search)
+  );
+  if (shopFilter === 'bought')  items = items.filter(i => i.status === 'bought');
+  if (shopFilter === 'pending') items = items.filter(i => i.status === 'pending');
+
+  // Stats
+  const all     = shoppingItems.length;
+  const bought  = shoppingItems.filter(i=>i.status==='bought').length;
+  const pending = shoppingItems.filter(i=>i.status==='pending').length;
+  const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  setEl('shop-stat-total',   all);
+  setEl('shop-stat-bought',  bought);
+  setEl('shop-stat-pending', pending);
+
+  const empty = document.getElementById('shop-empty');
+  if (empty) empty.style.display = items.length ? 'none' : 'block';
+
+  // ── Desktop table ──
+  const tbody = document.getElementById('shop-table-body');
+  if (tbody) {
+    tbody.innerHTML = items.map(item => {
+      const total = item.price * item.qty;
+      return `
+        <tr>
+          <td class="text-secondary text-xs">${item.date}</td>
+          <td>
+            <div class="font-semibold text-sm text-primary-text">${item.detail}</div>
+            ${item.note?`<div class="text-xs text-secondary mt-0.5">${item.note}</div>`:''}
+          </td>
+          <td><span class="badge ${getShopCatClass(item.category)}">${item.category}</span></td>
+          <td class="font-semibold text-primary-text text-sm">฿${Number(item.price).toLocaleString()}</td>
+          <td class="text-center font-semibold text-primary-text">${item.qty}</td>
+          <td class="font-bold" style="color:#818cf8;">฿${total.toLocaleString()}</td>
+          <td>
+            <span class="badge ${item.status==='bought'?'badge-green':'badge-red'}">
+              ${item.status==='bought'?'✅ ต้องซื้อ':'🕐 ยังไม่ซื้อ'}
+            </span>
+          </td>
+          <td>
+            <div class="flex gap-2">
+              <button onclick="toggleShopStatus(${item.id})" title="สลับสถานะ"
+                class="p-1 text-sm transition-colors"
+                style="color:${item.status==='bought'?'#ef4444':'#10b981'};">
+                ${item.status==='bought'?'↩️':'✅'}
+              </button>
+              <button onclick="editShop(${item.id})" class="text-blue-400 p-1">✏️</button>
+              <button onclick="deleteShop(${item.id})" class="text-red-400 p-1">🗑️</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  // ── Mobile cards ──
+  const cardList = document.getElementById('shop-card-list');
+  if (cardList) {
+    cardList.innerHTML = items.map(item => {
+      const total = item.price * item.qty;
+      return `
+        <div class="manage-card slide-up" style="margin-bottom:10px;">
+          <div class="flex items-start gap-3">
+            <!-- Status icon -->
+            <button onclick="toggleShopStatus(${item.id})"
+              class="icon-box flex-shrink-0 mt-0.5"
+              style="width:40px;height:40px;font-size:18px;
+                background:${item.status==='bought'?'linear-gradient(135deg,#10b981,#059669)':'linear-gradient(135deg,#ef4444,#dc2626)'};
+                border:none;cursor:pointer;">
+              ${item.status==='bought'?'✅':'🕐'}
+            </button>
+
+            <div class="flex-1 min-w-0">
+              <!-- Top row: name + total -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="font-bold text-sm text-primary-text leading-tight truncate">${item.detail}</div>
+                <div class="text-sm font-bold flex-shrink-0" style="color:#818cf8;">฿${total.toLocaleString()}</div>
+              </div>
+
+              <!-- Category + Status -->
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <span class="badge ${getShopCatClass(item.category)} text-xs">${item.category}</span>
+                <span class="badge ${item.status==='bought'?'badge-green':'badge-red'} text-xs">
+                  ${item.status==='bought'?'ต้องซื้อ':'ยังไม่ซื้อ'}
+                </span>
+              </div>
+
+              <!-- Price × qty + date -->
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-xs text-secondary">฿${Number(item.price).toLocaleString()} × ${item.qty}</span>
+                <span class="text-xs text-secondary">• ${item.date}</span>
+              </div>
+              ${item.note?`<div class="text-xs text-secondary mt-1 italic">${item.note}</div>`:''}
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col gap-1">
+              <button onclick="editShop(${item.id})" class="p-1.5 rounded-xl hover:bg-white/10 text-sm">✏️</button>
+              <button onclick="deleteShop(${item.id})" class="p-1.5 rounded-xl hover:bg-white/10 text-sm">🗑️</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+}
+
+// Category color map for shopping
+const SHOP_CAT_COLORS = [
+  'cat-noodle','cat-snack','cat-drink','cat-rent','cat-wage','cat-other',
+  'badge-purple','badge-blue','badge-orange'
+];
+function getShopCatClass(cat) {
+  const map = {
+    'วัตถุดิบทำมาม่า':'cat-noodle','วัตถุดิบทำขนม':'cat-snack',
+    'วัตถุดิบทำน้ำ':'cat-drink','ค่าเช่าที่':'cat-rent',
+    'ค่าจ้าง':'cat-wage','อื่นๆ':'cat-other'
+  };
+  return map[cat] || 'badge-purple';
+}
+
+function setShopFilter(el, filter) {
+  document.querySelectorAll('[data-shopfilter]').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  shopFilter = filter;
+  renderShopping();
+}
+
+// ── Modal open/close ──
+function openShopModal() {
+  editShopId = null;
+  document.getElementById('shop-modal-title').textContent = 'เพิ่มรายการซื้อสินค้า';
+  document.getElementById('shop-edit-id').value = '';
+  document.getElementById('shop-date').value  = new Date().toISOString().split('T')[0];
+  document.getElementById('shop-detail').value = '';
+  document.getElementById('shop-price').value  = '';
+  document.getElementById('shop-qty').value    = '1';
+  document.getElementById('shop-note').value   = '';
+  document.getElementById('shop-total-preview').textContent = '฿0.00';
+  document.getElementById('shop-status-pending').checked = true;
+  updateShopStatusUI();
+  populateShopCategories();
+  document.getElementById('shop-modal').classList.add('show');
+
+  // Live total preview
+  ['shop-price','shop-qty'].forEach(id => {
+    document.getElementById(id).oninput = updateShopTotal;
+  });
+}
+
+function closeShopModal() {
+  document.getElementById('shop-modal').classList.remove('show');
+}
+
+function editShop(id) {
+  const item = shoppingItems.find(i => i.id === id);
+  if (!item) return;
+  editShopId = id;
+  document.getElementById('shop-modal-title').textContent = 'แก้ไขรายการ';
+  document.getElementById('shop-edit-id').value  = id;
+  document.getElementById('shop-date').value     = item.date;
+  document.getElementById('shop-detail').value   = item.detail;
+  document.getElementById('shop-price').value    = item.price;
+  document.getElementById('shop-qty').value      = item.qty;
+  document.getElementById('shop-note').value     = item.note || '';
+  document.getElementById(item.status==='bought'?'shop-status-bought':'shop-status-pending').checked = true;
+  updateShopStatusUI();
+  populateShopCategories(item.category);
+  updateShopTotal();
+  document.getElementById('shop-modal').classList.add('show');
+
+  ['shop-price','shop-qty'].forEach(id => {
+    document.getElementById(id).oninput = updateShopTotal;
+  });
+}
+
+function populateShopCategories(selected) {
+  const expCats = categories.filter(c => c.type === 'expense');
+  const sel = document.getElementById('shop-category');
+  sel.innerHTML = expCats.map(c =>
+    `<option value="${c.name}" ${c.name===selected?'selected':''}>${c.name}</option>`
+  ).join('');
+}
+
+function updateShopStatusUI() {
+  const bought  = document.getElementById('shop-status-bought').checked;
+  const lblB    = document.getElementById('shop-status-bought-lbl');
+  const lblP    = document.getElementById('shop-status-pending-lbl');
+  lblB.style.borderColor  = bought ? '#10b981' : 'rgba(16,185,129,0.2)';
+  lblB.style.background   = bought ? 'rgba(16,185,129,0.18)' : 'rgba(16,185,129,0.06)';
+  lblP.style.borderColor  = !bought ? '#ef4444' : 'rgba(239,68,68,0.2)';
+  lblP.style.background   = !bought ? 'rgba(239,68,68,0.18)' : 'rgba(239,68,68,0.06)';
+}
+
+function updateShopTotal() {
+  const price = parseFloat(document.getElementById('shop-price').value) || 0;
+  const qty   = parseInt(document.getElementById('shop-qty').value)   || 0;
+  const el    = document.getElementById('shop-total-preview');
+  if (el) el.textContent = '฿' + (price * qty).toLocaleString(undefined, {minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+async function saveShop() {
+  const detail   = document.getElementById('shop-detail').value.trim();
+  const price    = parseFloat(document.getElementById('shop-price').value);
+  const qty      = parseInt(document.getElementById('shop-qty').value);
+  const category = document.getElementById('shop-category').value;
+  const date     = document.getElementById('shop-date').value;
+  const note     = document.getElementById('shop-note').value.trim();
+  const status   = document.getElementById('shop-status-bought').checked ? 'bought' : 'pending';
+
+  if (!detail) { showToast('กรุณากรอกรายละเอียดสินค้า', 'error'); return; }
+  if (isNaN(price) || price < 0) { showToast('กรุณากรอกราคาที่ถูกต้อง', 'error'); return; }
+  if (isNaN(qty)   || qty < 1)   { showToast('กรุณากรอกจำนวนที่ถูกต้อง', 'error'); return; }
+  if (!date) { showToast('กรุณาเลือกวันที่', 'error'); return; }
+
+  shoppingItems = loadShoppingData();
+
+  if (editShopId) {
+    const idx = shoppingItems.findIndex(i => i.id === editShopId);
+    if (idx > -1) shoppingItems[idx] = { ...shoppingItems[idx], detail, price, qty, category, date, note, status };
+    showToast('แก้ไขรายการสำเร็จ ✏️', 'success');
+  } else {
+    const maxId = shoppingItems.length ? Math.max(...shoppingItems.map(i=>i.id)) : 0;
+    shoppingItems.push({ id: maxId+1, detail, price, qty, category, date, note, status });
+    showToast('เพิ่มรายการสำเร็จ 🛍️', 'success');
+  }
+  saveShoppingData();
+  closeShopModal();
+  renderShopping();
+}
+
+function toggleShopStatus(id) {
+  shoppingItems = loadShoppingData();
+  const item = shoppingItems.find(i => i.id === id);
+  if (!item) return;
+  item.status = item.status === 'bought' ? 'pending' : 'bought';
+  saveShoppingData();
+  renderShopping();
+  showToast(item.status==='bought'?'✅ ต้องซื้อ!':'🕐 ยังไม่ซื้อ', item.status==='bought'?'success':'info');
+}
+
+function deleteShop(id) {
+  showConfirm('ลบรายการ','ต้องการลบรายการนี้หรือไม่?','🗑️', () => {
+    shoppingItems = loadShoppingData().filter(i => i.id !== id);
+    saveShoppingData();
+    renderShopping();
+    showToast('ลบรายการแล้ว','info');
+  });
+}
+
+// Close modal on overlay click
+document.getElementById('shop-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeShopModal();
+});
+
 // ==================== NOTIFICATION SYSTEM ====================
 // Notification types: income_added, expense_added, high_expense, daily_summary, profit_alert, low_profit
 let notifications = [];
