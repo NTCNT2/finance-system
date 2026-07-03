@@ -2132,7 +2132,21 @@ create table categories (
 alter table transactions enable row level security;
 alter table categories enable row level security;
 create policy "allow all" on transactions for all using (true);
-create policy "allow all" on categories for all using (true);</div>
+create policy "allow all" on categories  for all using (true);
+
+create table shopping_items (
+  id          bigint generated always as identity primary key,
+  date        date           not null,
+  detail      text           not null,
+  category    text           not null,
+  price       numeric(12,2)  not null default 0,
+  qty         integer        not null default 1,
+  status      text           not null default 'pending',
+  note        text,
+  created_at  timestamptz    default now()
+);
+alter table shopping_items enable row level security;
+create policy "allow all" on shopping_items for all using (true);</div>
         </div>
       </div>
 
@@ -2477,11 +2491,94 @@ let editShopId = null;
 
 const SHOP_STORAGE = 'fm_shopping';
 
-function loadShoppingData() {
+// ── Supabase CRUD for shopping_items table ──
+function mapShop(row) {
+  return {
+    id:       row.id,
+    date:     row.date,
+    detail:   row.detail,
+    category: row.category,
+    price:    Number(row.price),
+    qty:      Number(row.qty),
+    status:   row.status,
+    note:     row.note || ''
+  };
+}
+
+async function dbLoadShopping() {
+  const rows = await supa.get('shopping_items', 'order=date.desc,id.desc');
+  return rows.map(mapShop);
+}
+async function dbInsertShop(item) {
+  const rows = await supa.post('shopping_items', {
+    date: item.date, detail: item.detail, category: item.category,
+    price: item.price, qty: item.qty, status: item.status, note: item.note || ''
+  });
+  return mapShop(rows[0]);
+}
+async function dbUpdateShop(item) {
+  const rows = await supa.patch('shopping_items', item.id, {
+    date: item.date, detail: item.detail, category: item.category,
+    price: item.price, qty: item.qty, status: item.status, note: item.note || ''
+  });
+  return mapShop(rows[0]);
+}
+async function dbDeleteShop(id) {
+  await supa.delete('shopping_items', id);
+}
+
+// ── Unified Shopping API (Supabase → localStorage fallback) ──
+async function loadShoppingData() {
+  if (isSupabaseReady()) {
+    return await dbLoadShopping();
+  }
   const raw = localStorage.getItem(SHOP_STORAGE);
   return raw ? JSON.parse(raw) : [];
 }
+
+async function insertShopItem(item) {
+  if (isSupabaseReady()) {
+    return await dbInsertShop(item);
+  }
+  const all = JSON.parse(localStorage.getItem(SHOP_STORAGE) || '[]');
+  const maxId = all.length ? Math.max(...all.map(i => i.id)) : 0;
+  const newItem = { ...item, id: maxId + 1 };
+  localStorage.setItem(SHOP_STORAGE, JSON.stringify([...all, newItem]));
+  return newItem;
+}
+
+async function updateShopItem(item) {
+  if (isSupabaseReady()) {
+    return await dbUpdateShop(item);
+  }
+  const all = JSON.parse(localStorage.getItem(SHOP_STORAGE) || '[]');
+  const idx = all.findIndex(i => i.id === item.id);
+  if (idx > -1) all[idx] = item;
+  localStorage.setItem(SHOP_STORAGE, JSON.stringify(all));
+  return item;
+}
+
+async function deleteShopItem(id) {
+  if (isSupabaseReady()) {
+    await dbDeleteShop(id);
+  } else {
+    const all = JSON.parse(localStorage.getItem(SHOP_STORAGE) || '[]');
+    localStorage.setItem(SHOP_STORAGE, JSON.stringify(all.filter(i => i.id !== id)));
+  }
+}
+
+async function patchShopStatus(id, status) {
+  if (isSupabaseReady()) {
+    await supa.patch('shopping_items', id, { status });
+  } else {
+    const all = JSON.parse(localStorage.getItem(SHOP_STORAGE) || '[]');
+    const item = all.find(i => i.id === id);
+    if (item) { item.status = status; localStorage.setItem(SHOP_STORAGE, JSON.stringify(all)); }
+  }
+}
+
 function saveShoppingData() {
+  // legacy local-only save (kept for fallback path inside functions that still call it)
   localStorage.setItem(SHOP_STORAGE, JSON.stringify(shoppingItems));
 }
 
@@ -2500,8 +2597,13 @@ function closeFabMenu() {
 }
 
 // ── Render ──
-function renderShopping() {
-  shoppingItems = loadShoppingData();
+async function renderShopping() {
+  try {
+    shoppingItems = await loadShoppingData();
+  } catch(e) {
+    shoppingItems = [];
+    showToast('โหลดข้อมูลไม่สำเร็จ: ' + e.message, 'error');
+  }
   const search  = (document.getElementById('shop-search')?.value || '').toLowerCase();
 
   let items = [...shoppingItems].sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -2720,38 +2822,55 @@ async function saveShop() {
   if (isNaN(qty)   || qty < 1)   { showToast('กรุณากรอกจำนวนที่ถูกต้อง', 'error'); return; }
   if (!date) { showToast('กรุณาเลือกวันที่', 'error'); return; }
 
-  shoppingItems = loadShoppingData();
+  const btn = document.querySelector('#shop-modal .btn-gradient');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...'; }
 
-  if (editShopId) {
-    const idx = shoppingItems.findIndex(i => i.id === editShopId);
-    if (idx > -1) shoppingItems[idx] = { ...shoppingItems[idx], detail, price, qty, category, date, note, status };
-    showToast('แก้ไขรายการสำเร็จ ✏️', 'success');
-  } else {
-    const maxId = shoppingItems.length ? Math.max(...shoppingItems.map(i=>i.id)) : 0;
-    shoppingItems.push({ id: maxId+1, detail, price, qty, category, date, note, status });
-    showToast('เพิ่มรายการสำเร็จ 🛍️', 'success');
+  try {
+    if (editShopId) {
+      const updated = { id: editShopId, detail, price, qty, category, date, note, status };
+      const saved = await updateShopItem(updated);
+      const idx = shoppingItems.findIndex(i => i.id === editShopId);
+      if (idx > -1) shoppingItems[idx] = saved;
+      showToast('แก้ไขรายการสำเร็จ ✏️', 'success');
+    } else {
+      const newItem = await insertShopItem({ detail, price, qty, category, date, note, status });
+      shoppingItems.unshift(newItem);
+      showToast('เพิ่มรายการสำเร็จ 🛍️', 'success');
+    }
+    closeShopModal();
+    await renderShopping();
+  } catch(err) {
+    showToast('บันทึกไม่สำเร็จ: ' + err.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 บันทึก'; }
   }
-  saveShoppingData();
-  closeShopModal();
-  renderShopping();
 }
 
-function toggleShopStatus(id) {
-  shoppingItems = loadShoppingData();
+async function toggleShopStatus(id) {
   const item = shoppingItems.find(i => i.id === id);
   if (!item) return;
-  item.status = item.status === 'bought' ? 'pending' : 'bought';
-  saveShoppingData();
-  renderShopping();
-  showToast(item.status==='bought'?'✅ ต้องซื้อ!':'🕐 ยังไม่ซื้อ', item.status==='bought'?'success':'info');
+  const newStatus = item.status === 'bought' ? 'pending' : 'bought';
+  try {
+    await patchShopStatus(id, newStatus);
+    item.status = newStatus;  // optimistic update
+    await renderShopping();
+    showToast(newStatus === 'bought' ? '✅ ต้องซื้อ!' : '🕐 ยังไม่ซื้อ',
+              newStatus === 'bought' ? 'success' : 'info');
+  } catch(err) {
+    showToast('อัปเดตสถานะไม่สำเร็จ: ' + err.message, 'error');
+  }
 }
 
 function deleteShop(id) {
-  showConfirm('ลบรายการ','ต้องการลบรายการนี้หรือไม่?','🗑️', () => {
-    shoppingItems = loadShoppingData().filter(i => i.id !== id);
-    saveShoppingData();
-    renderShopping();
-    showToast('ลบรายการแล้ว','info');
+  showConfirm('ลบรายการ','ต้องการลบรายการนี้หรือไม่?','🗑️', async () => {
+    try {
+      await deleteShopItem(id);
+      shoppingItems = shoppingItems.filter(i => i.id !== id);
+      await renderShopping();
+      showToast('ลบรายการแล้ว', 'info');
+    } catch(err) {
+      showToast('ลบไม่สำเร็จ: ' + err.message, 'error');
+    }
   });
 }
 
@@ -4267,21 +4386,27 @@ async function initApp() {
       categories = await loadCategoriesData();
       showPageLoader('กำลังโหลดรายการ...');
       transactions = await loadTransactions();
+      showPageLoader('กำลังโหลดรายการซื้อสินค้า...');
+      shoppingItems = await loadShoppingData();
     } catch (err) {
       showToast('⚠️ โหลดจาก Supabase ไม่สำเร็จ — ใช้ข้อมูล local แทน', 'error');
-      const rawTx  = localStorage.getItem('fm_transactions');
-      const rawCat = localStorage.getItem('fm_categories');
-      transactions = rawTx  ? JSON.parse(rawTx)  : genDemoData();
-      categories   = rawCat ? JSON.parse(rawCat) : defaultCategories;
+      const rawTx   = localStorage.getItem('fm_transactions');
+      const rawCat  = localStorage.getItem('fm_categories');
+      const rawShop = localStorage.getItem(SHOP_STORAGE);
+      transactions  = rawTx   ? JSON.parse(rawTx)   : genDemoData();
+      categories    = rawCat  ? JSON.parse(rawCat)  : defaultCategories;
+      shoppingItems = rawShop ? JSON.parse(rawShop) : [];
     } finally {
       hidePageLoader();
     }
   } else {
     // ── Local / offline path — no async needed, never fails ──
-    const rawTx  = localStorage.getItem('fm_transactions');
-    const rawCat = localStorage.getItem('fm_categories');
-    transactions = rawTx  ? JSON.parse(rawTx)  : genDemoData();
-    categories   = rawCat ? JSON.parse(rawCat) : defaultCategories;
+    const rawTx   = localStorage.getItem('fm_transactions');
+    const rawCat  = localStorage.getItem('fm_categories');
+    const rawShop = localStorage.getItem(SHOP_STORAGE);
+    transactions  = rawTx   ? JSON.parse(rawTx)   : genDemoData();
+    categories    = rawCat  ? JSON.parse(rawCat)  : defaultCategories;
+    shoppingItems = rawShop ? JSON.parse(rawShop) : [];
   }
 
   updateDbStatusBadge();
